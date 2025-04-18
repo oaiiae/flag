@@ -14,23 +14,17 @@ func formatTime(layout string) func(t time.Time) string {
 }
 
 func Time(fs *flag.FlagSet, name, usage string, layout string) *time.Time {
-	g := generic[time.Time]{parseTime(layout), formatTime(layout), new(time.Time), false}
-	fs.Var(&g, name, usage)
-	return g.value
+	return Generic(fs, name, usage, parseTime(layout), formatTime(layout))
 }
 
 func TimeVar(fs *flag.FlagSet, p *time.Time, name, usage string, layout string) {
-	g := generic[time.Time]{parseTime(layout), formatTime(layout), p, true}
-	fs.Var(&g, name, usage)
+	GenericVar(fs, p, name, usage, parseTime(layout), formatTime(layout))
 }
 
-func Times(fs *flag.FlagSet, name, usage string, layout string) *[]time.Time {
-	g := generics[time.Time]{parseTime(layout), formatTime(layout), new([]time.Time)}
-	fs.Var(&g, name, usage)
-	return g.values
+func Times(fs *flag.FlagSet, name, usage string, layout string, split func(string) []string) *[]time.Time {
+	return Generics(fs, name, usage, parseTime(layout), formatTime(layout), split)
 }
 
-func TimesVar(fs *flag.FlagSet, p *[]time.Time, name, usage string, layout string) {
-	g := generics[time.Time]{parseTime(layout), formatTime(layout), p}
-	fs.Var(&g, name, usage)
+func TimesVar(fs *flag.FlagSet, p *[]time.Time, name, usage string, layout string, split func(string) []string) {
+	GenericsVar(fs, p, name, usage, parseTime(layout), formatTime(layout), split)
 }

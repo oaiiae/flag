@@ -15,10 +15,10 @@ func StringerVar[T fmt.Stringer](fs *flag.FlagSet, p *T, name, usage string, par
 	GenericVar(fs, p, name, usage, parse, formatStringer[T])
 }
 
-func Stringers[T fmt.Stringer](fs *flag.FlagSet, name, usage string, parse func(string) (T, error)) *[]T {
-	return Generics(fs, name, usage, parse, formatStringer[T])
+func Stringers[T fmt.Stringer](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), split func(string) []string) *[]T {
+	return Generics(fs, name, usage, parse, formatStringer[T], split)
 }
 
-func StringersVar[T fmt.Stringer](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error)) {
-	GenericsVar(fs, p, name, usage, parse, formatStringer[T])
+func StringersVar[T fmt.Stringer](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error), split func(string) []string) {
+	GenericsVar(fs, p, name, usage, parse, formatStringer[T], split)
 }

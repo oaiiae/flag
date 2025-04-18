@@ -44,17 +44,20 @@ func GenericVar[T any](fs *flag.FlagSet, p *T, name, usage string, parse func(st
 }
 
 type generics[T any] struct {
+	split  func(string) []string
 	parse  func(string) (T, error)
 	format func(T) string
 	values *[]T
 }
 
 func (v *generics[T]) Set(s string) error {
-	val, err := v.parse(s)
-	if err != nil {
-		return err
+	for _, s := range v.split(s) {
+		val, err := v.parse(s)
+		if err != nil {
+			return err
+		}
+		*v.values = append(*v.values, val)
 	}
-	*v.values = append(*v.values, val)
 	return nil
 }
 
@@ -73,13 +76,13 @@ func (v *generics[T]) Get() any {
 	return *v.values
 }
 
-func Generics[T any](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), format func(T) string) *[]T {
-	g := generics[T]{parse, format, new([]T)}
+func Generics[T any](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), format func(T) string, split func(string) []string) *[]T {
+	g := generics[T]{split, parse, format, new([]T)}
 	fs.Var(&g, name, usage)
 	return g.values
 }
 
-func GenericsVar[T any](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error), format func(T) string) {
-	g := generics[T]{parse, format, p}
+func GenericsVar[T any](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error), format func(T) string, split func(string) []string) {
+	g := generics[T]{split, parse, format, p}
 	fs.Var(&g, name, usage)
 }
