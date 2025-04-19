@@ -32,15 +32,12 @@ func (v *generic[T]) Get() any {
 	return *v.value
 }
 
-func Generic[T any](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), format func(T) string) *T {
-	g := generic[T]{parse, format, new(T), false}
-	fs.Var(&g, name, usage)
-	return g.value
+func Generic[T any](parse func(string) (T, error), format func(T) string) flag.Value {
+	return &generic[T]{parse, format, new(T), false}
 }
 
-func GenericVar[T any](fs *flag.FlagSet, p *T, name, usage string, parse func(string) (T, error), format func(T) string) {
-	g := generic[T]{parse, format, p, true}
-	fs.Var(&g, name, usage)
+func GenericVar[T any](p *T, parse func(string) (T, error), format func(T) string) flag.Value {
+	return &generic[T]{parse, format, p, true}
 }
 
 type generics[T any] struct {
@@ -76,13 +73,10 @@ func (v *generics[T]) Get() any {
 	return *v.values
 }
 
-func Generics[T any](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), format func(T) string, split func(string) []string) *[]T {
-	g := generics[T]{split, parse, format, new([]T)}
-	fs.Var(&g, name, usage)
-	return g.values
+func Generics[T any](parse func(string) (T, error), format func(T) string, split func(string) []string) flag.Value {
+	return &generics[T]{split, parse, format, new([]T)}
 }
 
-func GenericsVar[T any](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error), format func(T) string, split func(string) []string) {
-	g := generics[T]{split, parse, format, p}
-	fs.Var(&g, name, usage)
+func GenericsVar[T any](p *[]T, parse func(string) (T, error), format func(T) string, split func(string) []string) flag.Value {
+	return &generics[T]{split, parse, format, p}
 }
