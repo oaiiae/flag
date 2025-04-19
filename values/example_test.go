@@ -12,36 +12,36 @@ import (
 )
 
 func ExampleGeneric_usage() {
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	fs.SetOutput(os.Stdout)
-
 	type pair struct{ a, b string }
 	parse := func(s string) (pair, error) { a, b, _ := strings.Cut(s, ":"); return pair{a, b}, nil }
 	format := func(p pair) string { return p.a + ":" + p.b }
 
-	values.Generic(fs, "generic", "usage", parse, format)
-	values.GenericVar(fs, &pair{"foo", "bar"}, "generic-var", "usage", parse, format)
-	values.Generics(fs, "generics", "usage", parse, format, values.Unsplit)
-	values.GenericsVar(fs, &[]pair{{"foo", "bar"}, {"quu", "quux"}}, "generics-var", "usage", parse, format, values.Unsplit)
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+
+	fs.Var(values.Generic(parse, format), "generic", "usage")
+	fs.Var(values.GenericVar(&pair{"foo", "bar"}, parse, format), "generic-var", "usage")
+	fs.Var(values.Generics(parse, format, values.Unsplit), "generics", "usage")
+	fs.Var(values.GenericsVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, parse, format, values.Unsplit), "generics-var", "usage")
 
 	ip := netip.MustParseAddr("1.2.3.4")
-	values.Stringer(fs, "ip", "usage", netip.ParseAddr)
-	values.StringerVar(fs, &ip, "ip-var", "usage", netip.ParseAddr)
-	values.Stringers(fs, "ips", "usage", netip.ParseAddr, values.Split(","))
-	values.StringersVar(fs, &[]netip.Addr{ip, ip}, "ips-var", "usage", netip.ParseAddr, values.Split(","))
+	fs.Var(values.Stringer(netip.ParseAddr), "ip", "usage")
+	fs.Var(values.StringerVar(&ip, netip.ParseAddr), "ip-var", "usage")
+	fs.Var(values.Stringers(netip.ParseAddr, values.Split(",")), "ips", "usage")
+	fs.Var(values.StringersVar(&[]netip.Addr{ip, ip}, netip.ParseAddr, values.Split(",")), "ips-var", "usage")
 
 	u := &url.URL{Scheme: "foo", Path: "bar"}
-	values.Stringer(fs, "url", "usage", url.Parse)
-	values.StringerVar(fs, &u, "url-var", "usage", url.Parse)
-	values.Stringers(fs, "urls", "usage", url.Parse, values.Unsplit)
-	values.StringersVar(fs, &[]*url.URL{u, u}, "urls-var", "usage", url.Parse, values.Unsplit)
+	fs.Var(values.Stringer(url.Parse), "url", "usage")
+	fs.Var(values.StringerVar(&u, url.Parse), "url-var", "usage")
+	fs.Var(values.Stringers(url.Parse, values.Unsplit), "urls", "usage")
+	fs.Var(values.StringersVar(&[]*url.URL{u, u}, url.Parse, values.Unsplit), "urls-var", "usage")
 
 	t := time.Date(2025, 2, 1, 12, 34, 56, 0, time.UTC)
-	values.Time(fs, "time", "usage", time.RFC3339)
-	values.TimeVar(fs, &t, "time-var", "usage", time.RFC3339)
-	values.Times(fs, "times", "usage", time.RFC3339, values.Unsplit)
-	values.TimesVar(fs, &[]time.Time{t, t}, "times-var", "usage", time.RFC3339, values.Unsplit)
+	fs.Var(values.Time(time.RFC3339), "time", "usage")
+	fs.Var(values.TimeVar(&t, time.RFC3339), "time-var", "usage")
+	fs.Var(values.Times(time.RFC3339, values.Unsplit), "times", "usage")
+	fs.Var(values.TimesVar(&[]time.Time{t, t}, time.RFC3339, values.Unsplit), "times-var", "usage")
 
+	fs.SetOutput(os.Stdout)
 	fs.PrintDefaults()
 
 	// Output:
