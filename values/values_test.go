@@ -35,35 +35,40 @@ func TestFlagValues(t *testing.T) {
 		require.Equal(t, pair{"bar", "baz"}, p)
 	})
 
-	t.Run("generics", func(t *testing.T) {
-		v := values.Generics(parse, format, values.Unsplit)
-		require.NoError(t, v.Set("foo:bar"))
-		require.NoError(t, v.Set("bar:baz"))
+	t.Run("generic slice", func(t *testing.T) {
+		v := values.GenericSlice(",", parse, format)
+		require.NoError(t, v.Set("quu:quux"))
 		require.NoError(t, v.Set("foo:bar,bar:baz"))
-		require.Equal(t, "[foo:bar bar:baz foo:bar,bar:baz]", v.String())
-		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}, {"foo", "bar,bar:baz"}}, v.(flag.Getter).Get())
+		require.Equal(t, "foo:bar,bar:baz", v.String())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, v.(flag.Getter).Get())
 	})
 
-	t.Run("generics var", func(t *testing.T) {
+	t.Run("generic slice var", func(t *testing.T) {
 		var p []pair
-		v := values.GenericsVar(&p, parse, format, values.Unsplit)
-		require.NoError(t, v.Set("foo:bar"))
-		require.NoError(t, v.Set("bar:baz"))
+		v := values.GenericSliceVar(&p, ",", parse, format)
+		require.NoError(t, v.Set("quu:quux"))
 		require.NoError(t, v.Set("foo:bar,bar:baz"))
-		require.Equal(t, "[foo:bar bar:baz foo:bar,bar:baz]", v.String())
-		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}, {"foo", "bar,bar:baz"}}, v.(flag.Getter).Get())
-		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}, {"foo", "bar,bar:baz"}}, p)
+		require.Equal(t, "foo:bar,bar:baz", v.String())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, v.(flag.Getter).Get())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, p)
 	})
 
-	t.Run("generics split", func(t *testing.T) {
-		var p []pair
-		v := values.GenericsVar(&p, parse, format, values.Split(","))
+	t.Run("generic list", func(t *testing.T) {
+		v := values.GenericList(parse, format)
 		require.NoError(t, v.Set("foo:bar"))
 		require.NoError(t, v.Set("bar:baz"))
-		require.NoError(t, v.Set("foo:bar,bar:baz"))
-		require.Equal(t, "[foo:bar bar:baz foo:bar bar:baz]", v.String())
-		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}, {"foo", "bar"}, {"bar", "baz"}}, v.(flag.Getter).Get())
-		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}, {"foo", "bar"}, {"bar", "baz"}}, p)
+		require.Equal(t, "[foo:bar bar:baz]", v.String())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, v.(flag.Getter).Get())
+	})
+
+	t.Run("generic list var", func(t *testing.T) {
+		var p []pair
+		v := values.GenericListVar(&p, parse, format)
+		require.NoError(t, v.Set("foo:bar"))
+		require.NoError(t, v.Set("bar:baz"))
+		require.Equal(t, "[foo:bar bar:baz]", v.String())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, v.(flag.Getter).Get())
+		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, p)
 	})
 
 	t.Run("stringer", func(t *testing.T) {
@@ -82,8 +87,33 @@ func TestFlagValues(t *testing.T) {
 		require.Equal(t, netip.AddrFrom4([4]byte{1, 2, 3, 4}), p)
 	})
 
-	t.Run("stringers", func(t *testing.T) {
-		v := values.Stringers(netip.ParseAddr, values.Unsplit)
+	t.Run("stringer slice", func(t *testing.T) {
+		v := values.StringerSlice(",", netip.ParseAddr)
+		require.NoError(t, v.Set("1.2.3.4,5.6.7.8"))
+		require.Equal(t, "1.2.3.4,5.6.7.8", v.String())
+		require.Equal(t, []netip.Addr{
+			netip.AddrFrom4([4]byte{1, 2, 3, 4}),
+			netip.AddrFrom4([4]byte{5, 6, 7, 8}),
+		}, v.(flag.Getter).Get())
+	})
+
+	t.Run("stringer slice var", func(t *testing.T) {
+		var p []netip.Addr
+		v := values.StringerSliceVar(&p, ",", netip.ParseAddr)
+		require.NoError(t, v.Set("1.2.3.4,5.6.7.8"))
+		require.Equal(t, "1.2.3.4,5.6.7.8", v.String())
+		require.Equal(t, []netip.Addr{
+			netip.AddrFrom4([4]byte{1, 2, 3, 4}),
+			netip.AddrFrom4([4]byte{5, 6, 7, 8}),
+		}, v.(flag.Getter).Get())
+		require.Equal(t, []netip.Addr{
+			netip.AddrFrom4([4]byte{1, 2, 3, 4}),
+			netip.AddrFrom4([4]byte{5, 6, 7, 8}),
+		}, p)
+	})
+
+	t.Run("stringer list", func(t *testing.T) {
+		v := values.StringerList(netip.ParseAddr)
 		require.NoError(t, v.Set("1.2.3.4"))
 		require.NoError(t, v.Set("5.6.7.8"))
 		require.Equal(t, "[1.2.3.4 5.6.7.8]", v.String())
@@ -93,9 +123,9 @@ func TestFlagValues(t *testing.T) {
 		}, v.(flag.Getter).Get())
 	})
 
-	t.Run("stringers var", func(t *testing.T) {
+	t.Run("stringer list var", func(t *testing.T) {
 		var p []netip.Addr
-		v := values.StringersVar(&p, netip.ParseAddr, values.Unsplit)
+		v := values.StringerListVar(&p, netip.ParseAddr)
 		require.NoError(t, v.Set("1.2.3.4"))
 		require.NoError(t, v.Set("5.6.7.8"))
 		require.Equal(t, "[1.2.3.4 5.6.7.8]", v.String())
@@ -125,8 +155,33 @@ func TestFlagValues(t *testing.T) {
 		require.Equal(t, time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC), p)
 	})
 
-	t.Run("times", func(t *testing.T) {
-		v := values.Times(time.RFC3339, values.Unsplit)
+	t.Run("time slice", func(t *testing.T) {
+		v := values.TimeSlice(",", time.RFC3339)
+		require.NoError(t, v.Set("2025-05-07T06:06:06Z,2025-05-07T09:09:09Z"))
+		require.Equal(t, "2025-05-07T06:06:06Z,2025-05-07T09:09:09Z", v.String())
+		require.Equal(t, []time.Time{
+			time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC),
+			time.Date(2025, time.May, 7, 9, 9, 9, 0, time.UTC),
+		}, v.(flag.Getter).Get())
+	})
+
+	t.Run("time slice var", func(t *testing.T) {
+		var p []time.Time
+		v := values.TimeSliceVar(&p, ",", time.RFC3339)
+		require.NoError(t, v.Set("2025-05-07T06:06:06Z,2025-05-07T09:09:09Z"))
+		require.Equal(t, "2025-05-07T06:06:06Z,2025-05-07T09:09:09Z", v.String())
+		require.Equal(t, []time.Time{
+			time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC),
+			time.Date(2025, time.May, 7, 9, 9, 9, 0, time.UTC),
+		}, v.(flag.Getter).Get())
+		require.Equal(t, []time.Time{
+			time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC),
+			time.Date(2025, time.May, 7, 9, 9, 9, 0, time.UTC),
+		}, p)
+	})
+
+	t.Run("time list", func(t *testing.T) {
+		v := values.TimeList(time.RFC3339)
 		require.NoError(t, v.Set("2025-05-07T06:06:06Z"))
 		require.NoError(t, v.Set("2025-05-07T09:09:09Z"))
 		require.Equal(t, "[2025-05-07T06:06:06Z 2025-05-07T09:09:09Z]", v.String())
@@ -136,9 +191,9 @@ func TestFlagValues(t *testing.T) {
 		}, v.(flag.Getter).Get())
 	})
 
-	t.Run("times var", func(t *testing.T) {
+	t.Run("time list var", func(t *testing.T) {
 		var p []time.Time
-		v := values.TimesVar(&p, time.RFC3339, values.Unsplit)
+		v := values.TimeListVar(&p, time.RFC3339)
 		require.NoError(t, v.Set("2025-05-07T06:06:06Z"))
 		require.NoError(t, v.Set("2025-05-07T09:09:09Z"))
 		require.Equal(t, "[2025-05-07T06:06:06Z 2025-05-07T09:09:09Z]", v.String())
