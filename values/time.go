@@ -13,18 +13,18 @@ func formatTime(layout string) func(t time.Time) string {
 	return func(t time.Time) string { return t.Format(layout) }
 }
 
-func Time(fs *flag.FlagSet, name, usage string, layout string) *time.Time {
-	return Generic(fs, name, usage, parseTime(layout), formatTime(layout))
+func Time(layout string) flag.Value {
+	return Generic(parseTime(layout), formatTime(layout))
 }
 
-func TimeVar(fs *flag.FlagSet, p *time.Time, name, usage string, layout string) {
-	GenericVar(fs, p, name, usage, parseTime(layout), formatTime(layout))
+func TimeVar(p *time.Time, layout string) flag.Value {
+	return GenericVar(p, parseTime(layout), formatTime(layout))
 }
 
-func Times(fs *flag.FlagSet, name, usage string, layout string, split func(string) []string) *[]time.Time {
-	return Generics(fs, name, usage, parseTime(layout), formatTime(layout), split)
+func Times(layout string, split func(string) []string) flag.Value {
+	return Generics(parseTime(layout), formatTime(layout), split)
 }
 
-func TimesVar(fs *flag.FlagSet, p *[]time.Time, name, usage string, layout string, split func(string) []string) {
-	GenericsVar(fs, p, name, usage, parseTime(layout), formatTime(layout), split)
+func TimesVar(p *[]time.Time, layout string, split func(string) []string) flag.Value {
+	return GenericsVar(p, parseTime(layout), formatTime(layout), split)
 }

@@ -7,18 +7,18 @@ import (
 
 func formatStringer[T fmt.Stringer](t T) string { return t.String() }
 
-func Stringer[T fmt.Stringer](fs *flag.FlagSet, name, usage string, parse func(string) (T, error)) *T {
-	return Generic(fs, name, usage, parse, formatStringer[T])
+func Stringer[T fmt.Stringer](parse func(string) (T, error)) flag.Value {
+	return Generic(parse, formatStringer[T])
 }
 
-func StringerVar[T fmt.Stringer](fs *flag.FlagSet, p *T, name, usage string, parse func(string) (T, error)) {
-	GenericVar(fs, p, name, usage, parse, formatStringer[T])
+func StringerVar[T fmt.Stringer](p *T, parse func(string) (T, error)) flag.Value {
+	return GenericVar(p, parse, formatStringer[T])
 }
 
-func Stringers[T fmt.Stringer](fs *flag.FlagSet, name, usage string, parse func(string) (T, error), split func(string) []string) *[]T {
-	return Generics(fs, name, usage, parse, formatStringer[T], split)
+func Stringers[T fmt.Stringer](parse func(string) (T, error), split func(string) []string) flag.Value {
+	return Generics(parse, formatStringer[T], split)
 }
 
-func StringersVar[T fmt.Stringer](fs *flag.FlagSet, p *[]T, name, usage string, parse func(string) (T, error), split func(string) []string) {
-	GenericsVar(fs, p, name, usage, parse, formatStringer[T], split)
+func StringersVar[T fmt.Stringer](p *[]T, parse func(string) (T, error), split func(string) []string) flag.Value {
+	return GenericsVar(p, parse, formatStringer[T], split)
 }
