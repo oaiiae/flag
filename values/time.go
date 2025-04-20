@@ -21,10 +21,18 @@ func TimeVar(p *time.Time, layout string) flag.Value {
 	return GenericVar(p, parseTime(layout), formatTime(layout))
 }
 
-func Times(layout string, split func(string) []string) flag.Value {
-	return Generics(parseTime(layout), formatTime(layout), split)
+func TimeList(layout string) flag.Value {
+	return GenericList(parseTime(layout), formatTime(layout))
 }
 
-func TimesVar(p *[]time.Time, layout string, split func(string) []string) flag.Value {
-	return GenericsVar(p, parseTime(layout), formatTime(layout), split)
+func TimeListVar(p *[]time.Time, layout string) flag.Value {
+	return GenericListVar(p, parseTime(layout), formatTime(layout))
+}
+
+func TimeSlice(sep string, layout string) flag.Value {
+	return GenericSlice(sep, parseTime(layout), formatTime(layout))
+}
+
+func TimeSliceVar(p *[]time.Time, sep string, layout string) flag.Value {
+	return GenericSliceVar(p, sep, parseTime(layout), formatTime(layout))
 }

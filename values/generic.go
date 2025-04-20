@@ -3,6 +3,7 @@ package values
 import (
 	"flag"
 	"fmt"
+	"strings"
 )
 
 type generic[T any] struct {
@@ -40,25 +41,22 @@ func GenericVar[T any](p *T, parse func(string) (T, error), format func(T) strin
 	return &generic[T]{parse, format, p, true}
 }
 
-type generics[T any] struct {
-	split  func(string) []string
+type genericList[T any] struct {
 	parse  func(string) (T, error)
 	format func(T) string
 	values *[]T
 }
 
-func (v *generics[T]) Set(s string) error {
-	for _, s := range v.split(s) {
-		val, err := v.parse(s)
-		if err != nil {
-			return err
-		}
-		*v.values = append(*v.values, val)
+func (v *genericList[T]) Set(s string) error {
+	val, err := v.parse(s)
+	if err != nil {
+		return err
 	}
+	*v.values = append(*v.values, val)
 	return nil
 }
 
-func (v *generics[T]) String() string {
+func (v *genericList[T]) String() string {
 	if v.values == nil || len(*v.values) == 0 {
 		return ""
 	}
@@ -69,14 +67,59 @@ func (v *generics[T]) String() string {
 	return fmt.Sprint(a)
 }
 
-func (v *generics[T]) Get() any {
+func (v *genericList[T]) Get() any {
 	return *v.values
 }
 
-func Generics[T any](parse func(string) (T, error), format func(T) string, split func(string) []string) flag.Value {
-	return &generics[T]{split, parse, format, new([]T)}
+func GenericList[T any](parse func(string) (T, error), format func(T) string) flag.Value {
+	return &genericList[T]{parse, format, new([]T)}
 }
 
-func GenericsVar[T any](p *[]T, parse func(string) (T, error), format func(T) string, split func(string) []string) flag.Value {
-	return &generics[T]{split, parse, format, p}
+func GenericListVar[T any](p *[]T, parse func(string) (T, error), format func(T) string) flag.Value {
+	return &genericList[T]{parse, format, p}
+}
+
+type genericSlice[T any] struct {
+	sep    string
+	parse  func(string) (T, error)
+	format func(T) string
+	values *[]T
+}
+
+func (v *genericSlice[T]) Set(s string) (err error) {
+	ss := strings.Split(s, v.sep)
+	vs := make([]T, len(ss))
+	for i, s := range ss {
+		vs[i], err = v.parse(s)
+		if err != nil {
+			return
+		}
+	}
+	*v.values = vs
+	return nil
+}
+
+func (v *genericSlice[T]) String() string {
+	if v.values == nil || len(*v.values) == 0 {
+		return ""
+	}
+	b := strings.Builder{}
+	b.WriteString(v.format((*v.values)[0]))
+	for _, val := range (*v.values)[1:] {
+		b.WriteString(v.sep)
+		b.WriteString(v.format(val))
+	}
+	return b.String()
+}
+
+func (v *genericSlice[T]) Get() any {
+	return *v.values
+}
+
+func GenericSlice[T any](sep string, parse func(string) (T, error), format func(T) string) flag.Value {
+	return &genericSlice[T]{sep, parse, format, new([]T)}
+}
+
+func GenericSliceVar[T any](p *[]T, sep string, parse func(string) (T, error), format func(T) string) flag.Value {
+	return &genericSlice[T]{sep, parse, format, p}
 }
