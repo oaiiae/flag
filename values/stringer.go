@@ -15,10 +15,18 @@ func StringerVar[T fmt.Stringer](p *T, parse func(string) (T, error)) flag.Value
 	return GenericVar(p, parse, formatStringer[T])
 }
 
-func Stringers[T fmt.Stringer](parse func(string) (T, error), split func(string) []string) flag.Value {
-	return Generics(parse, formatStringer[T], split)
+func StringerList[T fmt.Stringer](parse func(string) (T, error)) flag.Value {
+	return GenericList(parse, formatStringer[T])
 }
 
-func StringersVar[T fmt.Stringer](p *[]T, parse func(string) (T, error), split func(string) []string) flag.Value {
-	return GenericsVar(p, parse, formatStringer[T], split)
+func StringerListVar[T fmt.Stringer](p *[]T, parse func(string) (T, error)) flag.Value {
+	return GenericListVar(p, parse, formatStringer[T])
+}
+
+func StringerSlice[T fmt.Stringer](sep string, parse func(string) (T, error)) flag.Value {
+	return GenericSlice(sep, parse, formatStringer[T])
+}
+
+func StringerSliceVar[T fmt.Stringer](p *[]T, sep string, parse func(string) (T, error)) flag.Value {
+	return GenericSliceVar(p, sep, parse, formatStringer[T])
 }

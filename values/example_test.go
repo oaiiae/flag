@@ -20,26 +20,34 @@ func ExampleGeneric_usage() {
 
 	fs.Var(values.Generic(parse, format), "generic", "usage")
 	fs.Var(values.GenericVar(&pair{"foo", "bar"}, parse, format), "generic-var", "usage")
-	fs.Var(values.Generics(parse, format, values.Unsplit), "generics", "usage")
-	fs.Var(values.GenericsVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, parse, format, values.Unsplit), "generics-var", "usage")
+	fs.Var(values.GenericList(parse, format), "generic-list", "usage")
+	fs.Var(values.GenericListVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, parse, format), "generic-list-var", "usage")
+	fs.Var(values.GenericSlice(",", parse, format), "generic-slice", "usage")
+	fs.Var(values.GenericSliceVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, ",", parse, format), "generic-slice-var", "usage")
 
 	ip := netip.MustParseAddr("1.2.3.4")
 	fs.Var(values.Stringer(netip.ParseAddr), "ip", "usage")
 	fs.Var(values.StringerVar(&ip, netip.ParseAddr), "ip-var", "usage")
-	fs.Var(values.Stringers(netip.ParseAddr, values.Split(",")), "ips", "usage")
-	fs.Var(values.StringersVar(&[]netip.Addr{ip, ip}, netip.ParseAddr, values.Split(",")), "ips-var", "usage")
+	fs.Var(values.StringerList(netip.ParseAddr), "ip-list", "usage")
+	fs.Var(values.StringerListVar(&[]netip.Addr{ip, ip}, netip.ParseAddr), "ip-list-var", "usage")
+	fs.Var(values.StringerSlice(",", netip.ParseAddr), "ip-slice", "usage")
+	fs.Var(values.StringerSliceVar(&[]netip.Addr{ip, ip}, ",", netip.ParseAddr), "ip-slice-var", "usage")
 
 	u := &url.URL{Scheme: "foo", Path: "bar"}
 	fs.Var(values.Stringer(url.Parse), "url", "usage")
 	fs.Var(values.StringerVar(&u, url.Parse), "url-var", "usage")
-	fs.Var(values.Stringers(url.Parse, values.Unsplit), "urls", "usage")
-	fs.Var(values.StringersVar(&[]*url.URL{u, u}, url.Parse, values.Unsplit), "urls-var", "usage")
+	fs.Var(values.StringerList(url.Parse), "url-list", "usage")
+	fs.Var(values.StringerListVar(&[]*url.URL{u, u}, url.Parse), "url-list-var", "usage")
+	fs.Var(values.StringerSlice(",", url.Parse), "url-slice", "usage")
+	fs.Var(values.StringerSliceVar(&[]*url.URL{u, u}, ",", url.Parse), "url-slice-var", "usage")
 
 	t := time.Date(2025, 2, 1, 12, 34, 56, 0, time.UTC)
 	fs.Var(values.Time(time.RFC3339), "time", "usage")
 	fs.Var(values.TimeVar(&t, time.RFC3339), "time-var", "usage")
-	fs.Var(values.Times(time.RFC3339, values.Unsplit), "times", "usage")
-	fs.Var(values.TimesVar(&[]time.Time{t, t}, time.RFC3339, values.Unsplit), "times-var", "usage")
+	fs.Var(values.TimeList(time.RFC3339), "time-list", "usage")
+	fs.Var(values.TimeListVar(&[]time.Time{t, t}, time.RFC3339), "time-list-var", "usage")
+	fs.Var(values.TimeSlice(",", time.RFC3339), "time-slice", "usage")
+	fs.Var(values.TimeSliceVar(&[]time.Time{t, t}, ",", time.RFC3339), "time-slice-var", "usage")
 
 	fs.SetOutput(os.Stdout)
 	fs.PrintDefaults()
@@ -47,34 +55,50 @@ func ExampleGeneric_usage() {
 	// Output:
 	//   -generic value
 	//     	usage
+	//   -generic-list value
+	//     	usage
+	//   -generic-list-var value
+	//     	usage (default [foo:bar quu:quux])
+	//   -generic-slice value
+	//     	usage
+	//   -generic-slice-var value
+	//     	usage (default foo:bar,quu:quux)
 	//   -generic-var value
 	//     	usage (default foo:bar)
-	//   -generics value
-	//     	usage
-	//   -generics-var value
-	//     	usage (default [foo:bar quu:quux])
 	//   -ip value
 	//     	usage
+	//   -ip-list value
+	//     	usage
+	//   -ip-list-var value
+	//     	usage (default [1.2.3.4 1.2.3.4])
+	//   -ip-slice value
+	//     	usage
+	//   -ip-slice-var value
+	//     	usage (default 1.2.3.4,1.2.3.4)
 	//   -ip-var value
 	//     	usage (default 1.2.3.4)
-	//   -ips value
-	//     	usage
-	//   -ips-var value
-	//     	usage (default [1.2.3.4 1.2.3.4])
 	//   -time value
 	//     	usage
+	//   -time-list value
+	//     	usage
+	//   -time-list-var value
+	//     	usage (default [2025-02-01T12:34:56Z 2025-02-01T12:34:56Z])
+	//   -time-slice value
+	//     	usage
+	//   -time-slice-var value
+	//     	usage (default 2025-02-01T12:34:56Z,2025-02-01T12:34:56Z)
 	//   -time-var value
 	//     	usage (default 2025-02-01T12:34:56Z)
-	//   -times value
-	//     	usage
-	//   -times-var value
-	//     	usage (default [2025-02-01T12:34:56Z 2025-02-01T12:34:56Z])
 	//   -url value
 	//     	usage
+	//   -url-list value
+	//     	usage
+	//   -url-list-var value
+	//     	usage (default [foo://bar foo://bar])
+	//   -url-slice value
+	//     	usage
+	//   -url-slice-var value
+	//     	usage (default foo://bar,foo://bar)
 	//   -url-var value
 	//     	usage (default foo://bar)
-	//   -urls value
-	//     	usage
-	//   -urls-var value
-	//     	usage (default [foo://bar foo://bar])
 }
