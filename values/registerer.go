@@ -16,6 +16,36 @@ type Registerer struct {
 
 func FlagSetRegisterer(fs *flag.FlagSet) Registerer { return Registerer{fs} }
 
+func (r Registerer) Bool(name string, value bool, usage string) *bool {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolVar(p *bool, name string, value bool, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) BoolList(name string, value []bool, usage string) *[]bool {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolListVar(p *[]bool, name string, value []bool, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) BoolSlice(name string, value []bool, sep string, usage string) *[]bool {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolSliceVar(p *[]bool, name string, value []bool, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
 func (r Registerer) Complex64(name string, value complex64, usage string) *complex64 {
 	r.Varer.Var(BasicVar(&value), name, usage)
 	return &value
@@ -431,6 +461,36 @@ func (r Registerer) Float64Slice(name string, value []float64, sep string, usage
 }
 
 func (r Registerer) Float64SliceVar(p *[]float64, name string, value []float64, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) String(name string, value string, usage string) *string {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) StringVar(p *string, name string, value string, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) StringList(name string, value []string, usage string) *[]string {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) StringListVar(p *[]string, name string, value []string, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) StringSlice(name string, value []string, sep string, usage string) *[]string {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) StringSliceVar(p *[]string, name string, value []string, sep string, usage string) {
 	*p = value
 	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
 }
