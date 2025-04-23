@@ -16,6 +16,515 @@ type Registerer struct {
 
 func FlagSetRegisterer(fs *flag.FlagSet) Registerer { return Registerer{fs} }
 
+func (r Registerer) Bool(name string, value bool, usage string) *bool {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolVar(p *bool, name string, value bool, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) BoolList(name string, value []bool, usage string) *[]bool {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolListVar(p *[]bool, name string, value []bool, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) BoolSlice(name string, value []bool, sep string, usage string) *[]bool {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) BoolSliceVar(p *[]bool, name string, value []bool, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Complex64(name string, value complex64, usage string) *complex64 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex64Var(p *complex64, name string, value complex64, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Complex64List(name string, value []complex64, usage string) *[]complex64 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex64ListVar(p *[]complex64, name string, value []complex64, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Complex64Slice(name string, value []complex64, sep string, usage string) *[]complex64 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex64SliceVar(p *[]complex64, name string, value []complex64, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Complex128(name string, value complex128, usage string) *complex128 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex128Var(p *complex128, name string, value complex128, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Complex128List(name string, value []complex128, usage string) *[]complex128 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex128ListVar(p *[]complex128, name string, value []complex128, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Complex128Slice(name string, value []complex128, sep string, usage string) *[]complex128 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Complex128SliceVar(p *[]complex128, name string, value []complex128, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Int(name string, value int, usage string) *int {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) IntVar(p *int, name string, value int, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) IntList(name string, value []int, usage string) *[]int {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) IntListVar(p *[]int, name string, value []int, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) IntSlice(name string, value []int, sep string, usage string) *[]int {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) IntSliceVar(p *[]int, name string, value []int, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Int8(name string, value int8, usage string) *int8 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int8Var(p *int8, name string, value int8, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Int8List(name string, value []int8, usage string) *[]int8 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int8ListVar(p *[]int8, name string, value []int8, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Int8Slice(name string, value []int8, sep string, usage string) *[]int8 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Int8SliceVar(p *[]int8, name string, value []int8, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+func (r Registerer) Int16(name string, value int16, usage string) *int16 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int16Var(p *int16, name string, value int16, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Int16List(name string, value []int16, usage string) *[]int16 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int16ListVar(p *[]int16, name string, value []int16, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Int16Slice(name string, value []int16, sep string, usage string) *[]int16 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Int16SliceVar(p *[]int16, name string, value []int16, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Int32(name string, value int32, usage string) *int32 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int32Var(p *int32, name string, value int32, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Int32List(name string, value []int32, usage string) *[]int32 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int32ListVar(p *[]int32, name string, value []int32, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Int32Slice(name string, value []int32, sep string, usage string) *[]int32 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Int32SliceVar(p *[]int32, name string, value []int32, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Int64(name string, value int64, usage string) *int64 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int64Var(p *int64, name string, value int64, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Int64List(name string, value []int64, usage string) *[]int64 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Int64ListVar(p *[]int64, name string, value []int64, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Int64Slice(name string, value []int64, sep string, usage string) *[]int64 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Int64SliceVar(p *[]int64, name string, value []int64, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Uint(name string, value uint, usage string) *uint {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) UintVar(p *uint, name string, value uint, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) UintList(name string, value []uint, usage string) *[]uint {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) UintListVar(p *[]uint, name string, value []uint, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) UintSlice(name string, value []uint, sep string, usage string) *[]uint {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) UintSliceVar(p *[]uint, name string, value []uint, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Uint8(name string, value uint8, usage string) *uint8 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint8Var(p *uint8, name string, value uint8, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Uint8List(name string, value []uint8, usage string) *[]uint8 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint8ListVar(p *[]uint8, name string, value []uint8, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Uint8Slice(name string, value []uint8, sep string, usage string) *[]uint8 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint8SliceVar(p *[]uint8, name string, value []uint8, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Uint16(name string, value uint16, usage string) *uint16 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint16Var(p *uint16, name string, value uint16, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Uint16List(name string, value []uint16, usage string) *[]uint16 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint16ListVar(p *[]uint16, name string, value []uint16, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Uint16Slice(name string, value []uint16, sep string, usage string) *[]uint16 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint16SliceVar(p *[]uint16, name string, value []uint16, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Uint32(name string, value uint32, usage string) *uint32 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint32Var(p *uint32, name string, value uint32, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Uint32List(name string, value []uint32, usage string) *[]uint32 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint32ListVar(p *[]uint32, name string, value []uint32, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Uint32Slice(name string, value []uint32, sep string, usage string) *[]uint32 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint32SliceVar(p *[]uint32, name string, value []uint32, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Uint64(name string, value uint64, usage string) *uint64 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint64Var(p *uint64, name string, value uint64, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Uint64List(name string, value []uint64, usage string) *[]uint64 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint64ListVar(p *[]uint64, name string, value []uint64, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Uint64Slice(name string, value []uint64, sep string, usage string) *[]uint64 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Uint64SliceVar(p *[]uint64, name string, value []uint64, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Float32(name string, value float32, usage string) *float32 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Float32Var(p *float32, name string, value float32, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Float32List(name string, value []float32, usage string) *[]float32 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Float32ListVar(p *[]float32, name string, value []float32, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Float32Slice(name string, value []float32, sep string, usage string) *[]float32 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Float32SliceVar(p *[]float32, name string, value []float32, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Float64(name string, value float64, usage string) *float64 {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Float64Var(p *float64, name string, value float64, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) Float64List(name string, value []float64, usage string) *[]float64 {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) Float64ListVar(p *[]float64, name string, value []float64, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) Float64Slice(name string, value []float64, sep string, usage string) *[]float64 {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) Float64SliceVar(p *[]float64, name string, value []float64, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) String(name string, value string, usage string) *string {
+	r.Varer.Var(BasicVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) StringVar(p *string, name string, value string, usage string) {
+	*p = value
+	r.Varer.Var(BasicVar(p), name, usage)
+}
+
+func (r Registerer) StringList(name string, value []string, usage string) *[]string {
+	r.Varer.Var(BasicListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) StringListVar(p *[]string, name string, value []string, usage string) {
+	*p = value
+	r.Varer.Var(BasicListVar(p), name, usage)
+}
+
+func (r Registerer) StringSlice(name string, value []string, sep string, usage string) *[]string {
+	r.Varer.Var(BasicSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) StringSliceVar(p *[]string, name string, value []string, sep string, usage string) {
+	*p = value
+	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
+}
+
+func (r Registerer) Duration(name string, value time.Duration, usage string) *time.Duration {
+	r.Varer.Var(DurationVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationVar(p *time.Duration, name string, value time.Duration, usage string) {
+	*p = value
+	r.Varer.Var(DurationVar(p), name, usage)
+}
+
+func (r Registerer) DurationList(name string, value []time.Duration, usage string) *[]time.Duration {
+	r.Varer.Var(DurationListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationListVar(p *[]time.Duration, name string, value []time.Duration, usage string) {
+	*p = value
+	r.Varer.Var(DurationListVar(p), name, usage)
+}
+
+func (r Registerer) DurationSlice(name string, value []time.Duration, sep string, usage string) *[]time.Duration {
+	r.Varer.Var(DurationSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationSliceVar(p *[]time.Duration, name string, value []time.Duration, sep string, usage string) {
+	*p = value
+	r.Varer.Var(DurationSliceVar(p, sep), name, usage)
+}
+
 func (r Registerer) IPAddr(name string, value netip.Addr, usage string) *netip.Addr {
 	r.Varer.Var(StringerVar(&value, netip.ParseAddr), name, usage)
 	return &value
