@@ -495,6 +495,36 @@ func (r Registerer) StringSliceVar(p *[]string, name string, value []string, sep
 	r.Varer.Var(BasicSliceVar(p, sep), name, usage)
 }
 
+func (r Registerer) Duration(name string, value time.Duration, usage string) *time.Duration {
+	r.Varer.Var(DurationVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationVar(p *time.Duration, name string, value time.Duration, usage string) {
+	*p = value
+	r.Varer.Var(DurationVar(p), name, usage)
+}
+
+func (r Registerer) DurationList(name string, value []time.Duration, usage string) *[]time.Duration {
+	r.Varer.Var(DurationListVar(&value), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationListVar(p *[]time.Duration, name string, value []time.Duration, usage string) {
+	*p = value
+	r.Varer.Var(DurationListVar(p), name, usage)
+}
+
+func (r Registerer) DurationSlice(name string, value []time.Duration, sep string, usage string) *[]time.Duration {
+	r.Varer.Var(DurationSliceVar(&value, sep), name, usage)
+	return &value
+}
+
+func (r Registerer) DurationSliceVar(p *[]time.Duration, name string, value []time.Duration, sep string, usage string) {
+	*p = value
+	r.Varer.Var(DurationSliceVar(p, sep), name, usage)
+}
+
 func (r Registerer) IPAddr(name string, value netip.Addr, usage string) *netip.Addr {
 	r.Varer.Var(StringerVar(&value, netip.ParseAddr), name, usage)
 	return &value

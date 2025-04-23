@@ -17,6 +17,7 @@ var (
 	as  = reg.IPAddrSlice("ipaddrs", nil, ",", "set comma-separated IP `addresses`")
 	p   = reg.IPPrefix("prefix", netip.MustParsePrefix("0.0.0.0/0"), "set `CIDR`")
 	ms  = reg.MailAddrList("mail", nil, "add a mail `address`")
+	d   = reg.Duration("duration", 1234*time.Second, "set duration")
 )
 
 func init() { flag.Parse() }
@@ -32,4 +33,5 @@ func main() {
 	fmt.Println("as=", *as)
 	fmt.Println("p=", *p)
 	fmt.Println("ms=", *ms)
+	fmt.Println("d=", *d)
 }
