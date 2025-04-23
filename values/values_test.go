@@ -206,4 +206,54 @@ func TestFlagValues(t *testing.T) {
 			time.Date(2025, time.May, 7, 9, 9, 9, 0, time.UTC),
 		}, p)
 	})
+
+	t.Run("duration", func(t *testing.T) {
+		v := values.Duration()
+		require.NoError(t, v.Set("5h30m"))
+		require.Equal(t, "5h30m0s", v.String())
+		require.Equal(t, 5*time.Hour+30*time.Minute, v.(flag.Getter).Get())
+	})
+
+	t.Run("duration var", func(t *testing.T) {
+		var p time.Duration
+		v := values.DurationVar(&p)
+		require.NoError(t, v.Set("5h30m"))
+		require.Equal(t, "5h30m0s", v.String())
+		require.Equal(t, 5*time.Hour+30*time.Minute, v.(flag.Getter).Get())
+		require.Equal(t, 5*time.Hour+30*time.Minute, p)
+	})
+
+	t.Run("duration slice", func(t *testing.T) {
+		v := values.DurationSlice(",")
+		require.NoError(t, v.Set("5h30m,1h15m"))
+		require.Equal(t, "5h30m0s,1h15m0s", v.String())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, v.(flag.Getter).Get())
+	})
+
+	t.Run("duration slice var", func(t *testing.T) {
+		var p []time.Duration
+		v := values.DurationSliceVar(&p, ",")
+		require.NoError(t, v.Set("5h30m,1h15m"))
+		require.Equal(t, "5h30m0s,1h15m0s", v.String())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, v.(flag.Getter).Get())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, p)
+	})
+
+	t.Run("duration list", func(t *testing.T) {
+		v := values.DurationList()
+		require.NoError(t, v.Set("5h30m"))
+		require.NoError(t, v.Set("1h15m"))
+		require.Equal(t, "[5h30m0s 1h15m0s]", v.String())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, v.(flag.Getter).Get())
+	})
+
+	t.Run("duration list var", func(t *testing.T) {
+		var p []time.Duration
+		v := values.DurationListVar(&p)
+		require.NoError(t, v.Set("5h30m"))
+		require.NoError(t, v.Set("1h15m"))
+		require.Equal(t, "[5h30m0s 1h15m0s]", v.String())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, v.(flag.Getter).Get())
+		require.Equal(t, []time.Duration{330 * time.Minute, 75 * time.Minute}, p)
+	})
 }
