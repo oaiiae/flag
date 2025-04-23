@@ -71,6 +71,56 @@ func TestFlagValues(t *testing.T) {
 		require.Equal(t, []pair{{"foo", "bar"}, {"bar", "baz"}}, p)
 	})
 
+	t.Run("basic", func(t *testing.T) {
+		v := values.Basic[complex64]()
+		require.NoError(t, v.Set("3+4i"))
+		require.Equal(t, "(3+4i)", v.String())
+		require.Equal(t, complex64(3+4i), v.(flag.Getter).Get())
+	})
+
+	t.Run("basic var", func(t *testing.T) {
+		var p complex64
+		v := values.BasicVar(&p)
+		require.NoError(t, v.Set("3+4i"))
+		require.Equal(t, "(3+4i)", v.String())
+		require.Equal(t, complex64(3+4i), v.(flag.Getter).Get())
+		require.Equal(t, complex64(3+4i), p)
+	})
+
+	t.Run("basic slice", func(t *testing.T) {
+		v := values.BasicSlice[complex64](",")
+		require.NoError(t, v.Set("3+4i,5+6i"))
+		require.Equal(t, "(3+4i),(5+6i)", v.String())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, v.(flag.Getter).Get())
+	})
+
+	t.Run("basic slice var", func(t *testing.T) {
+		var p []complex64
+		v := values.BasicSliceVar(&p, ",")
+		require.NoError(t, v.Set("3+4i,5+6i"))
+		require.Equal(t, "(3+4i),(5+6i)", v.String())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, v.(flag.Getter).Get())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, p)
+	})
+
+	t.Run("basic list", func(t *testing.T) {
+		v := values.BasicList[complex64]()
+		require.NoError(t, v.Set("3+4i"))
+		require.NoError(t, v.Set("5+6i"))
+		require.Equal(t, "[(3+4i) (5+6i)]", v.String())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, v.(flag.Getter).Get())
+	})
+
+	t.Run("basic list var", func(t *testing.T) {
+		var p []complex64
+		v := values.BasicListVar(&p)
+		require.NoError(t, v.Set("3+4i"))
+		require.NoError(t, v.Set("5+6i"))
+		require.Equal(t, "[(3+4i) (5+6i)]", v.String())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, v.(flag.Getter).Get())
+		require.Equal(t, []complex64{3 + 4i, 5 + 6i}, p)
+	})
+
 	t.Run("stringer", func(t *testing.T) {
 		v := values.Stringer(netip.ParseAddr)
 		require.NoError(t, v.Set("1.2.3.4"))
