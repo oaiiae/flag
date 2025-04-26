@@ -15,7 +15,7 @@ type basic = interface {
 		string | []byte
 }
 
-func parseBasic[T basic](s string) (T, error) {
+func parseBasic[T basic](s string) (T, error) { //nolint: funlen // long but still readable
 	var v T
 	var err error
 
