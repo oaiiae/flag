@@ -86,14 +86,15 @@ type genericSlice[T any] struct {
 	values *[]T
 }
 
-func (v *genericSlice[T]) Set(s string) (err error) {
+func (v *genericSlice[T]) Set(s string) error {
 	ss := strings.Split(s, v.sep)
 	vs := make([]T, len(ss))
 	for i, s := range ss {
-		vs[i], err = v.parse(s)
+		parsed, err := v.parse(s)
 		if err != nil {
-			return
+			return err
 		}
+		vs[i] = parsed
 	}
 	*v.values = vs
 	return nil
