@@ -20,12 +20,12 @@ issues:
 
 formatters:
     enable:
+        - gofmt # checks if the code is formatted according to 'gofmt' command
         - goimports # checks if the code and import statements are formatted according to the 'goimports' command
-        - golines # checks if code is formatted, and fixes long lines
 
         ## you may want to enable
         #- gci # checks if code and import statements are formatted, with additional rules
-        #- gofmt # checks if the code is formatted according to 'gofmt' command
+        #- golines # checks if code is formatted, and fixes long lines
 
         ## disabled
         #- gofumpt # [replaced by goimports, gofumports is not available yet] checks if code and import statements are formatted, with additional rules
@@ -335,6 +335,8 @@ linters:
                 - os.WriteFile
                 - prometheus.ExponentialBuckets.*
                 - prometheus.LinearBuckets
+                - strconv.FormatComplex
+                - strconv.ParseComplex
 
         nakedret:
             # Make an issue if func has more lines of code than this setting, and it has naked returns.
@@ -419,6 +421,8 @@ linters:
             - std-error-handling
             - common-false-positives
         # Excluding configuration per-path, per-linter, per-text and per-source.
+        paths:
+            - examples/
         rules:
             - source: "TODO"
               linters: [godot]
