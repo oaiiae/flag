@@ -33,10 +33,13 @@ func (v *generic[T]) Get() any {
 	return *v.value
 }
 
+// Generic declares a [flag.Value] implemented using the parse & format functions.
+// The actual value type is T.
 func Generic[T any](parse func(string) (T, error), format func(T) string) flag.Value {
 	return &generic[T]{parse, format, new(T), false}
 }
 
+// GenericVar is like [Generic] but stores the value in p.
 func GenericVar[T any](p *T, parse func(string) (T, error), format func(T) string) flag.Value {
 	return &generic[T]{parse, format, p, true}
 }
@@ -71,10 +74,13 @@ func (v *genericList[T]) Get() any {
 	return *v.values
 }
 
+// GenericList declares a list-style [flag.Value] implemented using the parse & format functions.
+// The actual value type is []T.
 func GenericList[T any](parse func(string) (T, error), format func(T) string) flag.Value {
 	return &genericList[T]{parse, format, new([]T)}
 }
 
+// GenericListVar is like [GenericList] but stores the values in p.
 func GenericListVar[T any](p *[]T, parse func(string) (T, error), format func(T) string) flag.Value {
 	return &genericList[T]{parse, format, p}
 }
@@ -117,10 +123,14 @@ func (v *genericSlice[T]) Get() any {
 	return *v.values
 }
 
+// GenericSlice declares a slice-style [flag.Value] implemented using the parse & format functions.
+// The input strings are split around sep before parsing.
+// The actual value type is []T.
 func GenericSlice[T any](sep string, parse func(string) (T, error), format func(T) string) flag.Value {
 	return &genericSlice[T]{sep, parse, format, new([]T)}
 }
 
+// GenericSliceVar is like [GenericSlice] but stores the values in p.
 func GenericSliceVar[T any](p *[]T, sep string, parse func(string) (T, error), format func(T) string) flag.Value {
 	return &genericSlice[T]{sep, parse, format, p}
 }
