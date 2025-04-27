@@ -102,26 +102,36 @@ func formatBasic[T basic](v T) string {
 	return fmt.Sprint(v)
 }
 
+// Basic declares a [flag.Value] for Go [basic] types.
+// The actual value type is T.
 func Basic[T basic]() flag.Value {
 	return Generic[T](parseBasic, formatBasic)
 }
 
+// BasicVar is like [Basic] but stores the value in p.
 func BasicVar[T basic](p *T) flag.Value {
 	return GenericVar(p, parseBasic, formatBasic)
 }
 
+// BasicList declares a list-style [flag.Value] for Go [basic] types.
+// The actual value type is []T.
 func BasicList[T basic]() flag.Value {
 	return GenericList[T](parseBasic, formatBasic)
 }
 
+// BasicListVar is like [BasicList] but stores the values in p.
 func BasicListVar[T basic](p *[]T) flag.Value {
 	return GenericListVar(p, parseBasic, formatBasic)
 }
 
+// BasicSlice declares a slice-style [flag.Value] for Go [basic] types.
+// The input strings are split around sep before parsing.
+// The actual value type is []T.
 func BasicSlice[T basic](sep string) flag.Value {
 	return GenericSlice[T](sep, parseBasic, formatBasic)
 }
 
+// BasicSliceVar is like [BasicSlice] but stores the values in p.
 func BasicSliceVar[T basic](p *[]T, sep string) flag.Value {
 	return GenericSliceVar(p, sep, parseBasic, formatBasic)
 }
