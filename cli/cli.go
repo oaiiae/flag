@@ -57,7 +57,7 @@ type Command struct {
 
 // Usage is the function called when an error occurs when parsing flags or when help is requested.
 // It may be customized by the user.
-var Usage = func(c *Command, fs *flag.FlagSet) {
+var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // mimicking [flag.Usage] global
 	w := fs.Output()
 
 	usage := []any{"Usage:", c.Name}
@@ -134,7 +134,9 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 		}
 	}
 
-	fs.VisitAll(func(f *flag.Flag) { ctx = context.WithValue(ctx, ctxkey(f.Name), f.Value) })
+	fs.VisitAll(func(f *flag.Flag) {
+		ctx = context.WithValue(ctx, ctxkey(f.Name), f.Value) //nolint: fatcontext // append all values to context
+	})
 
 	if len(args) > 0 {
 		i := slices.IndexFunc(c.Subcommands, func(c Command) bool { return c.Name == args[0] })
