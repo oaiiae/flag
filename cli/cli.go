@@ -123,14 +123,13 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	err := fs.Parse(args)
 	if err != nil {
 		return err
-	}
-	args = fs.Args()
-
-	actualFlags := []string{}
-	fs.Visit(func(f *flag.Flag) { actualFlags = append(actualFlags, f.Name) })
-	for _, name := range c.FlagRequired {
-		if !slices.Contains(actualFlags, name) {
-			return errors.New("missing required flag -" + name)
+	} else { //nolint: revive // keeps code of required-flag checks within a block
+		placed := make([]string, 0, fs.NFlag())
+		fs.Visit(func(f *flag.Flag) { placed = append(placed, f.Name) })
+		for _, name := range c.FlagRequired {
+			if !slices.Contains(placed, name) {
+				return errors.New("missing required flag -" + name)
+			}
 		}
 	}
 
@@ -141,6 +140,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	}
 	fs.VisitAll(func(f *flag.Flag) { flags[f.Name] = f })
 
+	args = fs.Args()
 	if len(args) > 0 {
 		i := slices.IndexFunc(c.Subcommands, func(c Command) bool { return c.Name == args[0] })
 		if i != -1 {
