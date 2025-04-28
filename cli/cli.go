@@ -134,9 +134,12 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 		}
 	}
 
-	fs.VisitAll(func(f *flag.Flag) {
-		ctx = context.WithValue(ctx, ctxkey(f.Name), f.Value) //nolint: fatcontext // append all values to context
-	})
+	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
+	if flags == nil {
+		flags = make(map[string]*flag.Flag)
+		ctx = context.WithValue(ctx, ctxFlags{}, flags)
+	}
+	fs.VisitAll(func(f *flag.Flag) { flags[f.Name] = f })
 
 	if len(args) > 0 {
 		i := slices.IndexFunc(c.Subcommands, func(c Command) bool { return c.Name == args[0] })
@@ -161,22 +164,32 @@ func (c *Command) invoke(ctx context.Context, i int, args []string) error {
 	return c.Subcommands[i].Run(ctx, args)
 }
 
-type ctxkey string
+type ctxFlags struct{}
 
-// Get returns the value returned by the named [flag.Value] Get method.
-// It returns nil if:
-//   - the specified [flag.Value] was not found
-//   - it does not implement [flag.Getter]
-//   - the [flag.Getter] itself returns nil
-func Get(ctx context.Context, name string) any {
-	if g, ok := ctx.Value(ctxkey(name)).(flag.Getter); ok {
-		return g.Get()
+// Flag returns the named [*flag.Flag] from the context.
+func Flag(ctx context.Context, name string) *flag.Flag {
+	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
+	if flags == nil {
+		return nil
 	}
-	return nil
+	return flags[name]
 }
 
-// Value returns the flag's [flag.Value] or nil if it was not found.
-func Value(ctx context.Context, name string) flag.Value {
-	v, _ := ctx.Value(ctxkey(name)).(flag.Value)
-	return v
+// Get looks for the named [*flag.Flag] and returns the result of calling Get on its [flag.Value].
+// It returns nil if:
+//   - the specified [*flag.Flag] was not found
+//   - its [flag.Value] does not implement [flag.Getter]
+//   - the [flag.Getter] itself returns nil
+func Get(ctx context.Context, name string) any {
+	f := Flag(ctx, name)
+	if f == nil {
+		return nil
+	}
+
+	g, ok := f.Value.(flag.Getter)
+	if !ok {
+		return nil
+	}
+
+	return g.Get()
 }
