@@ -30,7 +30,7 @@ func main() {
 			defer cancel()
 			return sub.Run(ctx, args)
 		},
-		Subcommands: []cli.Command{
+		Subcommands: []*cli.Command{
 			{
 				Name:      "dump",
 				Usage:     "Dump CLI options & arguments",
