@@ -49,7 +49,7 @@ type Command struct {
 	Invoke func(ctx context.Context, sub *Command, args []string) error
 
 	// Subcommands definitions.
-	Subcommands []Command
+	Subcommands []*Command
 
 	// Command function to run.
 	Func func(ctx context.Context, args []string) error
@@ -142,9 +142,13 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 
 	args = fs.Args()
 	if len(args) > 0 {
-		i := slices.IndexFunc(c.Subcommands, func(c Command) bool { return c.Name == args[0] })
+		i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return c.Name == args[0] })
 		if i != -1 {
-			return c.invoke(ctx, i, args[1:])
+			invoke := func(ctx context.Context, sub *Command, args []string) error { return sub.Run(ctx, args) }
+			if c.Invoke != nil {
+				invoke = c.Invoke
+			}
+			return invoke(ctx, c.Subcommands[i], args[1:])
 		}
 	}
 
@@ -154,14 +158,6 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 
 	fs.Usage()
 	return nil
-}
-
-// invoke runs the i-th subcommand, using the [Command]'s Invoke function if set.
-func (c *Command) invoke(ctx context.Context, i int, args []string) error {
-	if c.Invoke != nil {
-		return c.Invoke(ctx, &c.Subcommands[i], args)
-	}
-	return c.Subcommands[i].Run(ctx, args)
 }
 
 type ctxFlags struct{}
