@@ -13,30 +13,22 @@ import (
 
 // Command is the basic building block of command-line interfaces.
 type Command struct {
-	// Name of the command
+	// Name of the command.
 	Name string
-
-	// A simple description of what the command does.
-	// Used when printing usage.
+	// Usage description of the command.
 	Usage string
-
-	// Arguments placeholders when printing command usage.
+	// Usage command argument placeholders.
 	UsageArgs string
-
-	// Function provided by the user to define flags of the current command.
-	FlagSet func(fs *flag.FlagSet)
-
+	// Flags definition function for this command.
+	Flags func(fs *flag.FlagSet)
 	// Flag to environment variable mappings.
-	// It allows users to create flag arguments that may be set through environment as well.
-	// The environment is parsed before command-line arguments.
-	// May be nil.
-	FlagEnvironment map[string]string
-
-	// List of flags required when parsing arguments.
-	// Allows users to early fail if a critical flag is not set.
-	FlagRequired []string
-
-	// Optional invocation function. May be useful for executing code before and/or after every subcommand.
+	// Allows users to define flags that may be set through environment as well.
+	// Environment is parsed before command-line arguments.
+	FlagsEnvMap map[string]string
+	// Flags marked as required, enabling early failure.
+	FlagsRequired []string
+	// The invocation function wraps the execution of subcommands with custom code.
+	// For instance:
 	//
 	// func(ctx context.Context, sub *cli.Command, args []string) error {
 	// 	db, err := sql.Open("postgres", cli.Get(ctx, "dsn").(string))
@@ -47,10 +39,8 @@ type Command struct {
 	// 	return sub.Run(context.WithValue(ctx, dbKey{}, db), args)
 	// }
 	Invoke func(ctx context.Context, sub *Command, args []string) error
-
 	// Subcommands definitions.
 	Subcommands []*Command
-
 	// Command function to run.
 	Func func(ctx context.Context, args []string) error
 }
@@ -61,7 +51,7 @@ var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // m
 	w := fs.Output()
 
 	usage := []any{"Usage:", c.Name}
-	if c.FlagSet != nil {
+	if c.Flags != nil {
 		usage = append(usage, "[options]")
 	}
 	if len(c.Subcommands) > 0 {
@@ -75,14 +65,14 @@ var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // m
 		fmt.Fprintln(w, c.Usage)
 	}
 
-	if c.FlagSet != nil {
+	if c.Flags != nil {
 		fmt.Fprintln(w)
 		fmt.Fprintln(w, "Options:")
 		fs.PrintDefaults()
 	}
 
 	if len(c.Subcommands) > 0 {
-		fmt.Fprintln(w, "")
+		fmt.Fprintln(w)
 		fmt.Fprintln(w, "Commands:")
 
 		lines := []fmt.Stringer{}
@@ -108,11 +98,11 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet(c.Name, flag.ContinueOnError)
 	fs.Usage = func() { Usage(c, fs) }
 
-	if c.FlagSet != nil {
-		c.FlagSet(fs)
+	if c.Flags != nil {
+		c.Flags(fs)
 	}
 
-	for name, envname := range c.FlagEnvironment {
+	for name, envname := range c.FlagsEnvMap {
 		if env, ok := os.LookupEnv(envname); ok {
 			if err := fs.Set(name, env); err != nil {
 				return err
@@ -126,7 +116,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	} else { //nolint: revive // keeps code of required-flag checks within a block
 		placed := make([]string, 0, fs.NFlag())
 		fs.Visit(func(f *flag.Flag) { placed = append(placed, f.Name) })
-		for _, name := range c.FlagRequired {
+		for _, name := range c.FlagsRequired {
 			if !slices.Contains(placed, name) {
 				return errors.New("missing required flag -" + name)
 			}
