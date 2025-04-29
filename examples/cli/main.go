@@ -25,11 +25,6 @@ func main() {
 			fs.Bool("v", false, "verbose switch")
 			fs.Duration("dur", 0, "a duration")
 		},
-		Invoke: func(ctx context.Context, sub *cli.Command, args []string) error {
-			ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-			defer cancel()
-			return sub.Run(ctx, args)
-		},
 		Subcommands: []*cli.Command{
 			{
 				Name:      "dump",
@@ -65,9 +60,11 @@ func main() {
 		},
 	}
 
-	err := cli.Run(context.TODO(), os.Args[1:])
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	err := cli.Run(ctx, os.Args[1:])
 	if err != nil && err != flag.ErrHelp {
 		fmt.Println(err)
-		os.Exit(2) // exit immediately (skips deferred statements)
 	}
 }

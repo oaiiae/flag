@@ -27,18 +27,6 @@ type Command struct {
 	FlagsEnvMap map[string]string
 	// Flags marked as required, enabling early failure.
 	FlagsRequired []string
-	// The invocation function wraps the execution of subcommands with custom code.
-	// For instance:
-	//
-	// func(ctx context.Context, sub *cli.Command, args []string) error {
-	// 	db, err := sql.Open("postgres", cli.Get(ctx, "dsn").(string))
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	defer db.Close()
-	// 	return sub.Run(context.WithValue(ctx, dbKey{}, db), args)
-	// }
-	Invoke func(ctx context.Context, sub *Command, args []string) error
 	// Subcommands definitions.
 	Subcommands []*Command
 	// Command function to run.
@@ -122,6 +110,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 			}
 		}
 	}
+	args = fs.Args()
 
 	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
 	if flags == nil {
@@ -130,16 +119,9 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	}
 	fs.VisitAll(func(f *flag.Flag) { flags[f.Name] = f })
 
-	args = fs.Args()
-	if len(args) > 0 {
-		i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return c.Name == args[0] })
-		if i != -1 {
-			invoke := func(ctx context.Context, sub *Command, args []string) error { return sub.Run(ctx, args) }
-			if c.Invoke != nil {
-				invoke = c.Invoke
-			}
-			return invoke(ctx, c.Subcommands[i], args[1:])
-		}
+	i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return len(args) > 0 && args[0] == c.Name })
+	if i != -1 {
+		return c.Subcommands[i].Run(ctx, args[1:])
 	}
 
 	if c.Func != nil {
