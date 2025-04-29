@@ -15,7 +15,7 @@ func main() {
 	cli := &cli.Command{
 		Name:  os.Args[0],
 		Usage: "My super CLI",
-		FlagSet: func(fs *flag.FlagSet) {
+		Flags: func(fs *flag.FlagSet) {
 			fs.BoolFunc("version", "show version & exit", func(string) error {
 				fmt.Println("version number")
 				os.Exit(0)
@@ -35,11 +35,11 @@ func main() {
 				Name:      "dump",
 				Usage:     "Dump CLI options & arguments",
 				UsageArgs: "arguments...",
-				FlagSet: func(fs *flag.FlagSet) {
+				Flags: func(fs *flag.FlagSet) {
 					fs.String("foo", "", "a foo-lish option (env $FOO)")
 				},
-				FlagEnvironment: map[string]string{"foo": "FOO"},
-				FlagRequired:    []string{"foo"},
+				FlagsEnvMap:   map[string]string{"foo": "FOO"},
+				FlagsRequired: []string{"foo"},
 				Func: func(ctx context.Context, args []string) error {
 					fmt.Println("val", cli.Get(ctx, "val").(int))
 					fmt.Println("dur", cli.Get(ctx, "dur").(time.Duration))
@@ -51,7 +51,7 @@ func main() {
 			{
 				Name:  "wait",
 				Usage: "Wait until context is done",
-				FlagSet: func(fs *flag.FlagSet) {
+				Flags: func(fs *flag.FlagSet) {
 					fs.Duration("timeout", 10*time.Second, "wait up to this duration")
 				},
 				Func: func(ctx context.Context, args []string) error {

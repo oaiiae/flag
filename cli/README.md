@@ -19,24 +19,24 @@ func main() {
 		Name:      "myapp",
 		Usage:     "A sample application",
 		UsageArgs: "[arguments]",
-		FlagSet: func(fs *flag.FlagSet) {
-			fs.String("config", "config.yaml", "configuration file")
+		Flags: func(fs *flag.FlagSet) {
+			fs.String("config", "config.yaml", "configuration file (env $MYAPP_CONFIG)")
 			fs.Bool("verbose", false, "enable verbose output")
 		},
-		FlagEnvironment: map[string]string{
+		FlagsEnvMap: map[string]string{
 			"config": "MYAPP_CONFIG",
 		},
-		FlagRequired: []string{"config"},
+		FlagsRequired: []string{"config"},
 		Invoke: func(ctx context.Context, sub *cli.Command, args []string) error {
 			ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 			defer cancel()
 			return sub.Run(ctx, args)
 		},
-		Subcommands: []cli.Command{
+		Subcommands: []*cli.Command{
 			{
 				Name:  "serve",
 				Usage: "Start the server",
-				FlagSet: func(fs *flag.FlagSet) {
+				Flags: func(fs *flag.FlagSet) {
 					fs.Int("port", 8080, "port to listen on")
 				},
 				Func: func(ctx context.Context, args []string) error {
