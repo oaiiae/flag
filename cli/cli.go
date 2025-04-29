@@ -27,6 +27,25 @@ type Command struct {
 	FlagsEnvMap map[string]string
 	// Flags marked as required, enabling early failure.
 	FlagsRequired []string
+	// Function for adding custom code and passing values around the execution
+	// of the actual [Command]. Any error returned here is reported by the
+	// [Command.Run] method.
+	//
+	// For instance, this can be useful for handling shared resources:
+	//
+	// func(parent context.Context, run func(child context.Context) error) error {
+	// 	db, err := sql.Open("postgres", cli.Get(parent, "dsn").(string))
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	defer db.Close()
+	// 	return run(context.WithValue(parent, dbKey{}, db))
+	// }
+	//
+	// This opens a database handler and stores it in the context, making it
+	// available from this node to the remaining of the tree. This approach
+	// supports deferred statements, keeping cleanup code idiomatic.
+	RunContext func(parent context.Context, run func(child context.Context) error) error
 	// Subcommands definitions.
 	Subcommands []*Command
 	// Command function to run.
@@ -119,17 +138,29 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	}
 	fs.VisitAll(func(f *flag.Flag) { flags[f.Name] = f })
 
-	i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return len(args) > 0 && args[0] == c.Name })
-	if i != -1 {
-		return c.Subcommands[i].Run(ctx, args[1:])
+	runContext := defaultRunContext
+	if c.RunContext != nil {
+		runContext = c.RunContext
 	}
 
-	if c.Func != nil {
-		return c.Func(ctx, args)
-	}
+	return runContext(ctx, func(child context.Context) error {
+		i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return len(args) > 0 && args[0] == c.Name })
+		switch {
+		case i != -1: // the remaining arguments matched a subcommand
+			return c.Subcommands[i].Run(child, args[1:])
+		case c.Func != nil: // no subcommand could be run, fallback to this command action
+			return c.Func(child, args)
+		default: // nothing could be done, print usage
+			fs.Usage()
+			return nil
+		}
+	})
+}
 
-	fs.Usage()
-	return nil
+// defaultRunContext is the default implementation of [Command.RunContext].
+// It simply runs the callback without modifying anything.
+func defaultRunContext(parent context.Context, run func(child context.Context) error) error {
+	return run(parent)
 }
 
 type ctxFlags struct{}

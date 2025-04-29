@@ -7,6 +7,7 @@ A minimal package providing a simple and flexible CLI framework for building com
 - **Environment Support**: Map flags to environment variables
 - **Required Flags**: Enforce required flags for validation
 - **Context Integration**: Pass values through context between commands
+- **Custom Invocation**: Execute code before/after subcommands
 
 ## Usage
 
@@ -26,6 +27,11 @@ func main() {
 			"config": "MYAPP_CONFIG",
 		},
 		FlagsRequired: []string{"config"},
+		RunContext: func(parent context.Context, run func(ctx context.Context) error) error {
+			ctx, cancel := signal.NotifyContext(parent, os.Interrupt)
+			defer cancel()
+			return run(ctx)
+		},
 		Subcommands: []*cli.Command{
 			{
 				Name:  "serve",
