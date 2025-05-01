@@ -152,7 +152,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 			return c.Func(child, args)
 		default: // nothing could be done, print usage
 			fs.Usage()
-			return nil
+			return fmt.Errorf("cli cannot proceed with arguments %v", args)
 		}
 	})
 }
