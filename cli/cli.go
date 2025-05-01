@@ -4,7 +4,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -125,7 +124,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 		fs.Visit(func(f *flag.Flag) { placed = append(placed, f.Name) })
 		for _, name := range c.FlagsRequired {
 			if !slices.Contains(placed, name) {
-				return errors.New("missing required flag -" + name)
+				return fmt.Errorf("missing required flag -%s", name)
 			}
 		}
 	}
