@@ -165,22 +165,18 @@ func defaultRunContext(parent context.Context, run func(child context.Context) e
 
 type ctxFlags struct{}
 
-// Flag returns the named [*flag.Flag] from the context.
-func Flag(ctx context.Context, name string) *flag.Flag {
+// Get looks for the named flag and returns its value.
+// It returns nil if:
+//   - the specified [flag.Flag] was not found
+//   - its [flag.Value] does not implement [flag.Getter]
+//   - the [flag.Getter] itself returns nil
+func Get(ctx context.Context, name string) any {
 	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
 	if flags == nil {
 		return nil
 	}
-	return flags[name]
-}
 
-// Get looks for the named [*flag.Flag] and returns the result of calling Get on its [flag.Value].
-// It returns nil if:
-//   - the specified [*flag.Flag] was not found
-//   - its [flag.Value] does not implement [flag.Getter]
-//   - the [flag.Getter] itself returns nil
-func Get(ctx context.Context, name string) any {
-	f := Flag(ctx, name)
+	f := flags[name]
 	if f == nil {
 		return nil
 	}
