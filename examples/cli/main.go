@@ -15,7 +15,7 @@ func main() {
 	cli := &cli.Command{
 		Name:  os.Args[0],
 		Usage: "My super CLI",
-		FlagSet: func(fs *flag.FlagSet) {
+		Flags: func(fs *flag.FlagSet) {
 			fs.BoolFunc("version", "show version & exit", func(string) error {
 				fmt.Println("version number")
 				os.Exit(0)
@@ -25,21 +25,21 @@ func main() {
 			fs.Bool("v", false, "verbose switch")
 			fs.Duration("dur", 0, "a duration")
 		},
-		Invoke: func(ctx context.Context, sub *cli.Command, args []string) error {
-			ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+		RunContext: func(parent context.Context, run func(ctx context.Context) error) error {
+			ctx, cancel := signal.NotifyContext(parent, os.Interrupt)
 			defer cancel()
-			return sub.Run(ctx, args)
+			return run(ctx)
 		},
-		Subcommands: []cli.Command{
+		Subcommands: []*cli.Command{
 			{
 				Name:      "dump",
 				Usage:     "Dump CLI options & arguments",
 				UsageArgs: "arguments...",
-				FlagSet: func(fs *flag.FlagSet) {
+				Flags: func(fs *flag.FlagSet) {
 					fs.String("foo", "", "a foo-lish option (env $FOO)")
 				},
-				FlagEnvironment: map[string]string{"foo": "FOO"},
-				FlagRequired:    []string{"foo"},
+				FlagsEnvMap:   map[string]string{"foo": "FOO"},
+				FlagsRequired: []string{"foo"},
 				Func: func(ctx context.Context, args []string) error {
 					fmt.Println("val", cli.Get(ctx, "val").(int))
 					fmt.Println("dur", cli.Get(ctx, "dur").(time.Duration))
@@ -51,7 +51,7 @@ func main() {
 			{
 				Name:  "wait",
 				Usage: "Wait until context is done",
-				FlagSet: func(fs *flag.FlagSet) {
+				Flags: func(fs *flag.FlagSet) {
 					fs.Duration("timeout", 10*time.Second, "wait up to this duration")
 				},
 				Func: func(ctx context.Context, args []string) error {

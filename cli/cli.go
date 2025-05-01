@@ -13,44 +13,41 @@ import (
 
 // Command is the basic building block of command-line interfaces.
 type Command struct {
-	// Name of the command
+	// Name of the command.
 	Name string
-
-	// A simple description of what the command does.
-	// Used when printing usage.
+	// Usage description of the command.
 	Usage string
-
-	// Arguments placeholders when printing command usage.
+	// Usage command argument placeholders.
 	UsageArgs string
-
-	// Function provided by the user to define flags of the current command.
-	FlagSet func(fs *flag.FlagSet)
-
+	// Flags definition function for this command.
+	Flags func(fs *flag.FlagSet)
 	// Flag to environment variable mappings.
-	// It allows users to create flag arguments that may be set through environment as well.
-	// The environment is parsed before command-line arguments.
-	// May be nil.
-	FlagEnvironment map[string]string
-
-	// List of flags required when parsing arguments.
-	// Allows users to early fail if a critical flag is not set.
-	FlagRequired []string
-
-	// Optional invocation function. May be useful for executing code before and/or after every subcommand.
+	// Allows users to define flags that may be set through environment as well.
+	// Environment is parsed before command-line arguments.
+	FlagsEnvMap map[string]string
+	// Flags marked as required, enabling early failure.
+	FlagsRequired []string
+	// Function for adding custom code and passing values around the execution
+	// of the actual [Command]. Any error returned here is reported by the
+	// [Command.Run] method.
 	//
-	// func(ctx context.Context, sub *cli.Command, args []string) error {
-	// 	db, err := sql.Open("postgres", cli.Get(ctx, "dsn").(string))
+	// For instance, this can be useful for handling shared resources:
+	//
+	// func(parent context.Context, run func(child context.Context) error) error {
+	// 	db, err := sql.Open("postgres", cli.Get(parent, "dsn").(string))
 	// 	if err != nil {
 	// 		return err
 	// 	}
 	// 	defer db.Close()
-	// 	return sub.Run(context.WithValue(ctx, dbKey{}, db), args)
+	// 	return run(context.WithValue(parent, dbKey{}, db))
 	// }
-	Invoke func(ctx context.Context, sub *Command, args []string) error
-
+	//
+	// This opens a database handler and stores it in the context, making it
+	// available from this node to the remaining of the tree. This approach
+	// supports deferred statements, keeping cleanup code idiomatic.
+	RunContext func(parent context.Context, run func(child context.Context) error) error
 	// Subcommands definitions.
-	Subcommands []Command
-
+	Subcommands []*Command
 	// Command function to run.
 	Func func(ctx context.Context, args []string) error
 }
@@ -61,7 +58,7 @@ var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // m
 	w := fs.Output()
 
 	usage := []any{"Usage:", c.Name}
-	if c.FlagSet != nil {
+	if c.Flags != nil {
 		usage = append(usage, "[options]")
 	}
 	if len(c.Subcommands) > 0 {
@@ -75,14 +72,14 @@ var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // m
 		fmt.Fprintln(w, c.Usage)
 	}
 
-	if c.FlagSet != nil {
+	if c.Flags != nil {
 		fmt.Fprintln(w)
 		fmt.Fprintln(w, "Options:")
 		fs.PrintDefaults()
 	}
 
 	if len(c.Subcommands) > 0 {
-		fmt.Fprintln(w, "")
+		fmt.Fprintln(w)
 		fmt.Fprintln(w, "Commands:")
 
 		lines := []fmt.Stringer{}
@@ -108,11 +105,11 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet(c.Name, flag.ContinueOnError)
 	fs.Usage = func() { Usage(c, fs) }
 
-	if c.FlagSet != nil {
-		c.FlagSet(fs)
+	if c.Flags != nil {
+		c.Flags(fs)
 	}
 
-	for name, envname := range c.FlagEnvironment {
+	for name, envname := range c.FlagsEnvMap {
 		if env, ok := os.LookupEnv(envname); ok {
 			if err := fs.Set(name, env); err != nil {
 				return err
@@ -123,60 +120,75 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 	err := fs.Parse(args)
 	if err != nil {
 		return err
+	} else { //nolint: revive // keeps code of required-flag checks within a block
+		placed := make([]string, 0, fs.NFlag())
+		fs.Visit(func(f *flag.Flag) { placed = append(placed, f.Name) })
+		for _, name := range c.FlagsRequired {
+			if !slices.Contains(placed, name) {
+				return errors.New("missing required flag -" + name)
+			}
+		}
 	}
 	args = fs.Args()
 
-	actualFlags := []string{}
-	fs.Visit(func(f *flag.Flag) { actualFlags = append(actualFlags, f.Name) })
-	for _, name := range c.FlagRequired {
-		if !slices.Contains(actualFlags, name) {
-			return errors.New("missing required flag -" + name)
-		}
+	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
+	if flags == nil {
+		flags = make(map[string]*flag.Flag)
+		ctx = context.WithValue(ctx, ctxFlags{}, flags)
+	}
+	fs.VisitAll(func(f *flag.Flag) { flags[f.Name] = f })
+
+	runContext := defaultRunContext
+	if c.RunContext != nil {
+		runContext = c.RunContext
 	}
 
-	fs.VisitAll(func(f *flag.Flag) {
-		ctx = context.WithValue(ctx, ctxkey(f.Name), f.Value) //nolint: fatcontext // append all values to context
+	return runContext(ctx, func(child context.Context) error {
+		i := slices.IndexFunc(c.Subcommands, func(c *Command) bool { return len(args) > 0 && args[0] == c.Name })
+		switch {
+		case i != -1: // the remaining arguments matched a subcommand
+			return c.Subcommands[i].Run(child, args[1:])
+		case c.Func != nil: // no subcommand could be run, fallback to this command action
+			return c.Func(child, args)
+		default: // nothing could be done, print usage
+			fs.Usage()
+			return nil
+		}
 	})
-
-	if len(args) > 0 {
-		i := slices.IndexFunc(c.Subcommands, func(c Command) bool { return c.Name == args[0] })
-		if i != -1 {
-			return c.invoke(ctx, i, args[1:])
-		}
-	}
-
-	if c.Func != nil {
-		return c.Func(ctx, args)
-	}
-
-	fs.Usage()
-	return nil
 }
 
-// invoke runs the i-th subcommand, using the [Command]'s Invoke function if set.
-func (c *Command) invoke(ctx context.Context, i int, args []string) error {
-	if c.Invoke != nil {
-		return c.Invoke(ctx, &c.Subcommands[i], args)
-	}
-	return c.Subcommands[i].Run(ctx, args)
+// defaultRunContext is the default implementation of [Command.RunContext].
+// It simply runs the callback without modifying anything.
+func defaultRunContext(parent context.Context, run func(child context.Context) error) error {
+	return run(parent)
 }
 
-type ctxkey string
+type ctxFlags struct{}
 
-// Get returns the value returned by the named [flag.Value] Get method.
+// Flag returns the named [*flag.Flag] from the context.
+func Flag(ctx context.Context, name string) *flag.Flag {
+	flags, _ := ctx.Value(ctxFlags{}).(map[string]*flag.Flag)
+	if flags == nil {
+		return nil
+	}
+	return flags[name]
+}
+
+// Get looks for the named [*flag.Flag] and returns the result of calling Get on its [flag.Value].
 // It returns nil if:
-//   - the specified [flag.Value] was not found
-//   - it does not implement [flag.Getter]
+//   - the specified [*flag.Flag] was not found
+//   - its [flag.Value] does not implement [flag.Getter]
 //   - the [flag.Getter] itself returns nil
 func Get(ctx context.Context, name string) any {
-	if g, ok := ctx.Value(ctxkey(name)).(flag.Getter); ok {
-		return g.Get()
+	f := Flag(ctx, name)
+	if f == nil {
+		return nil
 	}
-	return nil
-}
 
-// Value returns the flag's [flag.Value] or nil if it was not found.
-func Value(ctx context.Context, name string) flag.Value {
-	v, _ := ctx.Value(ctxkey(name)).(flag.Value)
-	return v
+	g, ok := f.Value.(flag.Getter)
+	if !ok {
+		return nil
+	}
+
+	return g.Get()
 }
