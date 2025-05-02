@@ -9,9 +9,9 @@ Flag is a collection of packages extending the usability of the standard Go `fla
 
 Package `flag/cli` provides a very simple interface for building command-lines applications with:
 
-- **Command Trees**: build hierarchical command structures with subcommands
-- **Flag Compatibility**: compatible with Go's standard `flag` package
-- **Environment Support**: map flags to environment variables
+- **Command trees**: build hierarchical command structures with subcommands
+- **Flag compatibility**: compatible with Go's standard `flag` package
+- **Environment support**: map flags to environment variables
 - **Required flags**: enforce required flags for early failure
 - **Run context**: wrap commands with custom code
 
