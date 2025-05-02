@@ -3,7 +3,7 @@
 // Aside of [Registerer], there is 30 functions declaring various [flag.Value].
 // Their names are matched by this regular expression:
 //
-//	Generic(List|Slice)?(Var)?
+//	(Generic|Basic|Stringer|Time|Duration)(List|Slice)?(Var)?
 //
 // If neither 'List' nor 'Slice' are present, then the value is parsed and
 // stored to a variable. Multiple sets will effectively overwrite the value.
@@ -13,9 +13,8 @@
 //
 // If 'Slice' is present, the flag may be invoked with a string formatted as
 // multiple values joined with a separator. The [flag.Value] will split the
-// value around the separator string before parsing the substrings into a slice
-// as well. Calling the flag multiple times will not append new values but
-// overwrite the full slice instead.
+// input string before parsing the substrings into a slice as well. Calling the
+// flag multiple times overwrites the full slice and does NOT append new values.
 //
 // If 'Var' is present, the function accepts another pointer parameter which
 // will be used to store the parsed values.

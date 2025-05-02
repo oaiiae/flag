@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// Registerer provides an API analogous to [*flag.FlagSet] for defining flags.
-// It trades the flexibility of using plain [flag.Value] for simplicity when
-// declaring common types flags.
+// Registerer provides an interface analogous to [*flag.FlagSet] for defining
+// flags for common types. It trades the flexibility of using plain
+// [flag.Value] for convenience and simplicity.
 type Registerer struct {
 	Varer interface {
 		Var(value flag.Value, name string, usage string)

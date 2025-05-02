@@ -16,73 +16,70 @@ Use the value builders directly with `flag.Var()`:
 
 ```go
 func main() {
-    // Basic scalar value
-    flag.Var(values.Basic[int](), "count", "number of items")
+	flag.Var(values.Basic[int](), "count", "number of items")
+	flag.Var(values.Duration(), "timeout", "operation timeout")
+	flag.Var(values.BasicList[string](), "tag", "tags (can be specified multiple times)")
+	flag.Var(values.Stringer(url.Parse), "endpoint", "API endpoint URL")
+	flag.Var(values.BasicSlice[string](","), "regions", "comma-separated list of regions")
 
-    // Time duration with automatic parsing
-    flag.Var(values.Duration(), "timeout", "operation timeout")
+	// Custom type with custom parser
+	type LogLevel int
+	flag.Var(values.Generic(
+		func(s string) (LogLevel, error) {
+			switch s {
+			case "debug":
+				return 0, nil
+			case "info":
+				return 1, nil
+			default:
+				return 0, fmt.Errorf("unknown log level: %s", s)
+			}
+		},
+		func(l LogLevel) string {
+			switch l {
+			case 0:
+				return "debug"
+			case 1:
+				return "info"
+			default:
+				return "unknown"
+			}
+		},
+	), "log-level", "logging level")
 
-    // List flags (can be specified multiple times)
-    flag.Var(values.BasicList[string](), "tag", "tags (can be specified multiple times)")
-
-    // URL with automatic parsing and validation
-    flag.Var(values.Stringer[*url.URL](url.Parse), "endpoint", "API endpoint URL")
-
-    // Slice flag (comma-separated values in one flag)
-    flag.Var(values.BasicSlice[string](","), "regions", "comma-separated list of regions")
-
-    // Custom type with custom parser
-    type LogLevel int
-    flag.Var(values.Generic(
-        func(s string) (LogLevel, error) {
-            // Custom parsing logic
-            switch s {
-            case "debug":
-                return 0, nil
-            case "info":
-                return 1, nil
-            default:
-                return 0, fmt.Errorf("unknown log level: %s", s)
-            }
-        },
-        func(l LogLevel) string {
-            switch l {
-            case 0:
-                return "debug"
-            case 1:
-                return "info"
-            default:
-                return "unknown"
-            }
-        },
-    ), "log-level", "logging level")
-
-    flag.Parse()
-
-    // Print all flag values
-    flag.VisitAll(func(f *flag.Flag) {
-        fmt.Printf("%s: %v\n", f.Name, f.Value)
-    })
+	flag.Parse()
+	flag.VisitAll(func(f *flag.Flag) { fmt.Printf("%s: %v\n", f.Name, f.Value) })
 }
+```
+```
+$ go run . -count 12 -endpoint http://example.com -tag foo -tag bar -regions euw,eune
+count: 12
+endpoint: http://example.com
+log-level:
+regions: euw,eune
+tag: [foo bar]
+timeout:
 ```
 
 This is the most flexible way for defining complex flag values. Alternatively, the `Registerer` gives up the generic approach but provides a simpler API for common types, akin to `flag.FlagSet`:
 
 ```go
 func main() {
-    // Create a registerer for the standard flag package
-    r := values.FlagSetRegisterer(flag.CommandLine)
+	reg := values.FlagSetRegisterer(flag.CommandLine)
 
-    // Register various flag types
-    count := r.Int("count", 10, "number of items")
-    timeout := r.Duration("timeout", 5*time.Second, "operation timeout")
-    urls := r.URLList("url", nil, "URLs to process (can be specified multiple times)")
+	count := reg.Int("count", 10, "number of items")
+	timeout := reg.Duration("timeout", 5*time.Second, "operation timeout")
+	bind := reg.IPAddrPort("bind", netip.MustParseAddrPort("0.0.0.0:8080"), "binding address")
 
-    flag.Parse()
-
-    // Use the parsed values
-    fmt.Printf("Count: %d\n", *count)
-    fmt.Printf("Timeout: %v\n", *timeout)
-    fmt.Printf("URLs: %v\n", *urls)
+	flag.Parse()
+	fmt.Printf("Count: %d\n", *count)
+	fmt.Printf("Timeout: %v\n", *timeout)
+	fmt.Printf("Bind: %v\n", *bind)
 }
+```
+```
+$ go run . -count 12 -bind 10.0.0.1:80
+Count: 12
+Timeout: 5s
+Bind: 10.0.0.1:80
 ```
