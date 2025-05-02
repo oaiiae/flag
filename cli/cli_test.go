@@ -127,6 +127,17 @@ func TestCommand_unable(t *testing.T) {
 	require.ErrorContains(t, err, "cli cannot proceed with arguments []")
 }
 
+func TestGetValueNotFound(t *testing.T) {
+	c := cli.Command{
+		Func: func(ctx context.Context, _ []string) error {
+			require.Nil(t, cli.Get(ctx, "foo"))
+			return errors.New("command terminated")
+		},
+	}
+	err := c.Run(context.Background(), []string{})
+	require.ErrorContains(t, err, "command terminated")
+}
+
 func TestGetNotCliContext(t *testing.T) {
 	require.Nil(t, cli.Get(context.Background(), "foo"))
 }
