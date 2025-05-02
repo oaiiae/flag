@@ -158,3 +158,32 @@ func ExampleTime_usage() {
 	//   -time-var value
 	//     	usage (default 2025-02-01T12:34:56Z)
 }
+
+func ExampleDuration_usage() {
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+
+	d := 1234 * time.Second
+	fs.Var(values.Duration(), "duration", "usage")
+	fs.Var(values.DurationVar(&d), "duration-var", "usage")
+	fs.Var(values.DurationList(), "duration-list", "usage")
+	fs.Var(values.DurationListVar(&[]time.Duration{d, d}), "duration-list-var", "usage")
+	fs.Var(values.DurationSlice(","), "duration-slice", "usage")
+	fs.Var(values.DurationSliceVar(&[]time.Duration{d, d}, ","), "duration-slice-var", "usage")
+
+	fs.SetOutput(os.Stdout)
+	fs.PrintDefaults()
+
+	// Output:
+	//   -duration value
+	//     	usage
+	//   -duration-list value
+	//     	usage
+	//   -duration-list-var value
+	//     	usage (default [20m34s 20m34s])
+	//   -duration-slice value
+	//     	usage
+	//   -duration-slice-var value
+	//     	usage (default 20m34s,20m34s)
+	//   -duration-var value
+	//     	usage (default 20m34s)
+}
