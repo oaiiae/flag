@@ -1,5 +1,8 @@
 # Go Flag Extensions
 
+![pipeline](https://gitlab.com/oaiiae/flag/badges/main/pipeline.svg)
+![coverage](https://gitlab.com/oaiiae/flag/badges/main/coverage.svg)
+
 This repository contains extensions and utilities for Go's standard `flag` package.
 
 The actual code is organized into two main subpackages:
