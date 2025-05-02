@@ -412,20 +412,19 @@ func TestBasicParsing(t *testing.T) {
 			expectVal: "hello world",
 			expectStr: "hello world",
 		},
-		// FIXME: check fails because of []byte and reflect.DeepEqual?
-		// {
-		// 	value:     values.Basic[[]byte](),
-		// 	input:     "hello world",
-		// 	expectVal: []byte("hello world"),
-		// 	expectStr: "hello world",
-		// },
+		{
+			value:     values.Basic[[]byte](),
+			input:     "hello world",
+			expectVal: []byte("hello world"),
+			expectStr: "[104 101 108 108 111 32 119 111 114 108 100]",
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%T", tc.value), func(t *testing.T) {
 			require.NoError(t, tc.value.Set(tc.input))
-			require.Equal(t, tc.expectStr, tc.value.String())
 			require.Equal(t, tc.expectVal, tc.value.(flag.Getter).Get())
+			require.Equal(t, tc.expectStr, tc.value.String())
 		})
 	}
 }
