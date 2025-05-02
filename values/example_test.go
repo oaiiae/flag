@@ -43,6 +43,35 @@ func ExampleGeneric_usage() {
 	//     	usage (default foo:bar)
 }
 
+func ExampleBasic_usage() {
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+
+	c := 12 + 42i
+	fs.Var(values.Basic[complex128](), "complex", "usage")
+	fs.Var(values.BasicVar(&c), "complex-var", "usage")
+	fs.Var(values.BasicList[complex128](), "complex-list", "usage")
+	fs.Var(values.BasicListVar(&[]complex128{c, c}), "complex-list-var", "usage")
+	fs.Var(values.BasicSlice[complex128](","), "complex-slice", "usage")
+	fs.Var(values.BasicSliceVar(&[]complex128{c, c}, ","), "complex-slice-var", "usage")
+
+	fs.SetOutput(os.Stdout)
+	fs.PrintDefaults()
+
+	// Output:
+	//   -complex value
+	//     	usage
+	//   -complex-list value
+	//     	usage
+	//   -complex-list-var value
+	//     	usage (default [(12+42i) (12+42i)])
+	//   -complex-slice value
+	//     	usage
+	//   -complex-slice-var value
+	//     	usage (default (12+42i),(12+42i))
+	//   -complex-var value
+	//     	usage (default (12+42i))
+}
+
 func ExampleStringer_usage() {
 	fs := flag.NewFlagSet("test", flag.ContinueOnError)
 
