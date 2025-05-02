@@ -84,15 +84,15 @@ Commands:
 ```
 ```
 $ go run . serve -h
-  Usage: serve [options]
+Usage: serve [options]
 
-  Start the server
+Start the server
 
-  Options:
-    -config string
-      	configuration file (env $MYAPP_CONFIG) (default "config.yaml")
-    -port int
-      	port to listen on (default 8080)
+Options:
+  -config string
+    	configuration file (env $MYAPP_CONFIG) (default "config.yaml")
+  -port int
+    	port to listen on (default 8080)
 ```
 
 ## flag/values
