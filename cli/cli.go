@@ -32,7 +32,7 @@ type Command struct {
 	//
 	// For instance, this can be useful for handling shared resources:
 	//
-	// func(parent context.Context, run func(child context.Context) error) error {
+	// func(parent context.Context, run func(ctx context.Context) error) error {
 	// 	db, err := sql.Open("postgres", cli.Get(parent, "dsn").(string))
 	// 	if err != nil {
 	// 		return err
@@ -44,7 +44,7 @@ type Command struct {
 	// This opens a database handler and stores it in the context, making it
 	// available from this node to the remaining of the tree. This approach
 	// supports deferred statements, keeping cleanup code idiomatic.
-	RunContext func(parent context.Context, run func(child context.Context) error) error
+	RunContext func(parent context.Context, run func(ctx context.Context) error) error
 	// Subcommands definitions.
 	Subcommands []*Command
 	// Command function to run.
@@ -158,7 +158,7 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 
 // defaultRunContext is the default implementation of [Command.RunContext].
 // It simply runs the callback without modifying anything.
-func defaultRunContext(parent context.Context, run func(child context.Context) error) error {
+func defaultRunContext(parent context.Context, run func(ctx context.Context) error) error {
 	return run(parent)
 }
 

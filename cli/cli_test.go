@@ -63,7 +63,7 @@ func TestCommandRun(t *testing.T) {
 		},
 		FlagsEnvMap:   map[string]string{"bool": "CLI_TEST_BOOL"},
 		FlagsRequired: []string{"bool"},
-		RunContext: func(parent context.Context, run func(child context.Context) error) error {
+		RunContext: func(parent context.Context, run func(context.Context) error) error {
 			return errors.Join(run(parent), errors.New("runcontext terminated"))
 		},
 		Subcommands: []*cli.Command{
