@@ -1,4 +1,4 @@
-module gitlab.com/oaiiae/flag
+module github.com/oaiiae/flag
 
 go 1.23
 

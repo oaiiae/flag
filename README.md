@@ -2,9 +2,6 @@
 
 Flag is a collection of packages extending the usability of the standard Go `flag` package. It has zero dependencies and aims to provide a simple, Go-idiomatic framework for implementing complex command-line interfaces.
 
-![pipeline](https://gitlab.com/oaiiae/flag/badges/main/pipeline.svg)
-![coverage](https://gitlab.com/oaiiae/flag/badges/main/coverage.svg)
-
 ## flag/cli
 
 Package `flag/cli` provides a very simple interface for building command-lines applications with:

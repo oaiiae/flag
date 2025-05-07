@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"gitlab.com/oaiiae/flag/values"
+	"github.com/oaiiae/flag/values"
 )
 
 var (
