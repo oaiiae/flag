@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"time"
 
-	"gitlab.com/oaiiae/flag/cli"
+	"github.com/oaiiae/flag/cli"
 )
 
 func main() {

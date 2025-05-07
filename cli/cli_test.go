@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/oaiiae/flag/cli"
 	"github.com/stretchr/testify/require"
-	"gitlab.com/oaiiae/flag/cli"
 )
 
 func ExampleUsage() {
