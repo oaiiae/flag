@@ -2,6 +2,56 @@
 
 Flag is a collection of packages extending the usability of the standard Go `flag` package. It has zero dependencies and aims to provide a simple, Go-idiomatic framework for implementing complex command-line interfaces.
 
+## flag/values
+
+Package `flag/values` provides generic implementations of the `flag.Value` interface with support for:
+
+- **Generic values**: define flags for any type with custom parse/format functions
+- **Basic types**: all Go basic types (int, string, bool, float, ...)
+- **Standard library types**: support for time.time, net/url.URL, net/netip.Addr, net/mail.Address, ...
+- **Collections**: support for both repeated flags (lists) and delimited values (slices)
+
+```go
+func main() {
+    flag.Var(values.Basic[int](), "count", "number of items")
+    flag.Var(values.BasicList[string](), "tag", "tags (can be specified multiple times)")
+    flag.Var(values.BasicSlice[string](","), "regions", "comma-separated list of regions")
+    flag.Var(values.Stringer(url.Parse), "endpoint", "API endpoint URL")
+    flag.Parse()
+    flag.VisitAll(func(f *flag.Flag) { fmt.Printf("%s: %v\n", f.Name, f.Value.(flag.Getter).Get()) })
+}
+```
+```
+$ go run . -count 12 -endpoint http://example.com -tag foo -tag bar -regions euw,eune
+count: 12
+endpoint: http://example.com
+regions: [euw eune]
+tag: [foo bar]
+```
+
+Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet` simplifying registration for common types:
+
+```go
+func main() {
+    var (
+        reg   = values.FlagSetRegisterer(flag.CommandLine)
+        count = reg.Int("count", 10, "number of items")
+        email = reg.MailAddr("email", &mail.Address{}, "contact email")
+        bind  = reg.IPAddrPort("bind", netip.MustParseAddrPort("0.0.0.0:8080"), "binding address")
+    )
+    flag.Parse()
+    fmt.Println("Count:", *count)
+    fmt.Println("Email:", *email)
+    fmt.Println("Bind:", *bind)
+}
+```
+```
+$ go run . -count 12 -bind 10.0.0.1:80 -email foo@example.com
+Count: 12
+Email: <foo@example.com>
+Bind: 10.0.0.1:80
+```
+
 ## flag/cli
 
 Package `flag/cli` provides a very simple interface for building command-lines applications with:
@@ -90,54 +140,4 @@ Options:
     	configuration file (env $MYAPP_CONFIG) (default "config.yaml")
   -port int
     	port to listen on (default 8080)
-```
-
-## flag/values
-
-Package `flag/values` provides generic implementations of the standard Go `flag.Value` interface with support for:
-
-- **Generic values**: define flags for any type with custom parse/format functions
-- **Basic types**: all Go basic types (int, string, bool, float, ...)
-- **Standard library types**: support for time.time, net/url.URL, net/netip.Addr, net/mail.Address, ...
-- **Collections**: support for both repeated flags (lists) and delimited values (slices)
-
-```go
-func main() {
-    flag.Var(values.Basic[int](), "count", "number of items")
-    flag.Var(values.BasicList[string](), "tag", "tags (can be specified multiple times)")
-    flag.Var(values.BasicSlice[string](","), "regions", "comma-separated list of regions")
-    flag.Var(values.Stringer(url.Parse), "endpoint", "API endpoint URL")
-    flag.Parse()
-    flag.VisitAll(func(f *flag.Flag) { fmt.Printf("%s: %v\n", f.Name, f.Value.(flag.Getter).Get()) })
-}
-```
-```
-$ go run . -count 12 -endpoint http://example.com -tag foo -tag bar -regions euw,eune
-count: 12
-endpoint: http://example.com
-regions: [euw eune]
-tag: [foo bar]
-```
-
-Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet` simplifying registration for common types:
-
-```go
-func main() {
-    var (
-        reg   = values.FlagSetRegisterer(flag.CommandLine)
-        count = reg.Int("count", 10, "number of items")
-        email = reg.MailAddr("email", &mail.Address{}, "contact email")
-        bind  = reg.IPAddrPort("bind", netip.MustParseAddrPort("0.0.0.0:8080"), "binding address")
-    )
-    flag.Parse()
-    fmt.Printf("Count: %d\n", *count)
-    fmt.Printf("Email: %v\n", *email)
-    fmt.Printf("Bind: %v\n", *bind)
-}
-```
-```
-$ go run . -count 12 -bind 10.0.0.1:80 -email foo@example.com
-Count: 12
-Email: <foo@example.com>
-Bind: 10.0.0.1:80
 ```
