@@ -10,19 +10,18 @@ import (
 	"github.com/oaiiae/flag/values"
 )
 
-var (
-	reg = values.FlagSetRegisterer(flag.CommandLine)
-	t   = reg.Time("ts", time.Now(), time.RFC3339, "set a `RFC3339 date`")
-	u   = reg.URL("url", &url.URL{}, "set `URL`")
-	as  = reg.IPAddrSlice("ipaddrs", nil, ",", "set comma-separated IP `addresses`")
-	p   = reg.IPPrefix("prefix", netip.MustParsePrefix("0.0.0.0/0"), "set `CIDR`")
-	ms  = reg.MailAddrList("mail", nil, "add a mail `address`")
-	d   = reg.Duration("duration", 1234*time.Second, "set duration")
-)
-
-func init() { flag.Parse() }
-
 func main() {
+	var (
+		reg = values.FlagSetRegisterer(flag.CommandLine)
+		t   = reg.Time("ts", time.Now(), time.RFC3339, "set a `RFC3339 date`")
+		u   = reg.URL("url", &url.URL{}, "set `URL`")
+		as  = reg.IPAddrSlice("ipaddrs", nil, ",", "set comma-separated IP `addresses`")
+		p   = reg.IPPrefix("prefix", netip.MustParsePrefix("0.0.0.0/0"), "set `CIDR`")
+		ms  = reg.MailAddrList("mail", nil, "add a mail `address`")
+		d   = reg.Duration("duration", 1234*time.Second, "set duration")
+	)
+	flag.Parse()
+
 	flag.VisitAll(func(f *flag.Flag) {
 		v := f.Value.(flag.Getter)
 		fmt.Printf("%s\t%T\t%v\n", f.Name, v.Get(), v.Get())

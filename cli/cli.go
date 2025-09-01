@@ -84,7 +84,9 @@ var Usage = func(c *Command, fs *flag.FlagSet) { //nolint: gochecknoglobals // m
 		lines := []fmt.Stringer{}
 		width := 0
 		for _, c := range c.Subcommands {
-			lines = append(lines, stringerFunc(func() string { return fmt.Sprintf("  %-*s    %s", width, c.Name, c.Usage) }))
+			lines = append(lines,
+				stringerFunc(func() string { return fmt.Sprintf("  %-*s    %s", width, c.Name, c.Usage) }),
+			)
 			width = max(width, len(c.Name))
 		}
 		for _, line := range lines {

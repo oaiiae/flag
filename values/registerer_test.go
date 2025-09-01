@@ -452,7 +452,11 @@ func TestRegisterer_values(t *testing.T) {
 			defValue: "",
 			isType:   values.TimeSlice("", ""),
 			input:    "2025-05-07T06:06:06Z,2025-05-08T07:07:07Z,2025-05-09T08:08:08Z",
-			output:   []time.Time{time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC), time.Date(2025, time.May, 8, 7, 7, 7, 0, time.UTC), time.Date(2025, time.May, 9, 8, 8, 8, 0, time.UTC)},
+			output: []time.Time{
+				time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC),
+				time.Date(2025, time.May, 8, 7, 7, 7, 0, time.UTC),
+				time.Date(2025, time.May, 9, 8, 8, 8, 0, time.UTC),
+			},
 		},
 		{
 			name:     "ip address",
@@ -476,7 +480,11 @@ func TestRegisterer_values(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.Addr]("", nil),
 			input:    "192.168.1.1,10.0.0.1,172.16.0.1",
-			output:   []netip.Addr{netip.MustParseAddr("192.168.1.1"), netip.MustParseAddr("10.0.0.1"), netip.MustParseAddr("172.16.0.1")},
+			output: []netip.Addr{
+				netip.MustParseAddr("192.168.1.1"),
+				netip.MustParseAddr("10.0.0.1"),
+				netip.MustParseAddr("172.16.0.1"),
+			},
 		},
 		{
 			name:     "ip address and port",
@@ -500,7 +508,11 @@ func TestRegisterer_values(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.AddrPort]("", nil),
 			input:    "192.168.1.1:8080,10.0.0.1:9090,172.16.0.1:7070",
-			output:   []netip.AddrPort{netip.MustParseAddrPort("192.168.1.1:8080"), netip.MustParseAddrPort("10.0.0.1:9090"), netip.MustParseAddrPort("172.16.0.1:7070")},
+			output: []netip.AddrPort{
+				netip.MustParseAddrPort("192.168.1.1:8080"),
+				netip.MustParseAddrPort("10.0.0.1:9090"),
+				netip.MustParseAddrPort("172.16.0.1:7070"),
+			},
 		},
 		{
 			name:     "ip prefix",
@@ -524,7 +536,11 @@ func TestRegisterer_values(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.Prefix]("", nil),
 			input:    "192.168.1.0/24,10.0.0.0/8,172.16.0.0/16",
-			output:   []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24"), netip.MustParsePrefix("10.0.0.0/8"), netip.MustParsePrefix("172.16.0.0/16")},
+			output: []netip.Prefix{
+				netip.MustParsePrefix("192.168.1.0/24"),
+				netip.MustParsePrefix("10.0.0.0/8"),
+				netip.MustParsePrefix("172.16.0.0/16"),
+			},
 		},
 		{
 			name:     "mail addr",
@@ -548,7 +564,11 @@ func TestRegisterer_values(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[*mail.Address]("", nil),
 			input:    "foo@bar.com,baz@qux.com,quux@corge.com",
-			output:   []*mail.Address{{Address: "foo@bar.com"}, {Address: "baz@qux.com"}, {Address: "quux@corge.com"}},
+			output: []*mail.Address{
+				{Address: "foo@bar.com"},
+				{Address: "baz@qux.com"},
+				{Address: "quux@corge.com"},
+			},
 		},
 		{
 			name:     "url",
@@ -1252,7 +1272,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.TimeSlice("", ""),
 			input:    "2025-05-07T06:06:06Z,2025-05-08T07:07:07Z,2025-05-09T08:08:08Z",
-			output:   []time.Time{time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC), time.Date(2025, time.May, 8, 7, 7, 7, 0, time.UTC), time.Date(2025, time.May, 9, 8, 8, 8, 0, time.UTC)},
+			output: []time.Time{
+				time.Date(2025, time.May, 7, 6, 6, 6, 0, time.UTC),
+				time.Date(2025, time.May, 8, 7, 7, 7, 0, time.UTC),
+				time.Date(2025, time.May, 9, 8, 8, 8, 0, time.UTC),
+			},
 		},
 		{
 			name: "ip address",
@@ -1288,7 +1312,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.Addr]("", nil),
 			input:    "192.168.1.1,10.0.0.1,172.16.0.1",
-			output:   []netip.Addr{netip.MustParseAddr("192.168.1.1"), netip.MustParseAddr("10.0.0.1"), netip.MustParseAddr("172.16.0.1")},
+			output: []netip.Addr{
+				netip.MustParseAddr("192.168.1.1"),
+				netip.MustParseAddr("10.0.0.1"),
+				netip.MustParseAddr("172.16.0.1"),
+			},
 		},
 		{
 			name: "ip address and port",
@@ -1324,7 +1352,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.AddrPort]("", nil),
 			input:    "192.168.1.1:8080,10.0.0.1:9090,172.16.0.1:7070",
-			output:   []netip.AddrPort{netip.MustParseAddrPort("192.168.1.1:8080"), netip.MustParseAddrPort("10.0.0.1:9090"), netip.MustParseAddrPort("172.16.0.1:7070")},
+			output: []netip.AddrPort{
+				netip.MustParseAddrPort("192.168.1.1:8080"),
+				netip.MustParseAddrPort("10.0.0.1:9090"),
+				netip.MustParseAddrPort("172.16.0.1:7070"),
+			},
 		},
 		{
 			name: "ip prefix",
@@ -1360,7 +1392,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[netip.Prefix]("", nil),
 			input:    "192.168.1.0/24,10.0.0.0/8,172.16.0.0/16",
-			output:   []netip.Prefix{netip.MustParsePrefix("192.168.1.0/24"), netip.MustParsePrefix("10.0.0.0/8"), netip.MustParsePrefix("172.16.0.0/16")},
+			output: []netip.Prefix{
+				netip.MustParsePrefix("192.168.1.0/24"),
+				netip.MustParsePrefix("10.0.0.0/8"),
+				netip.MustParsePrefix("172.16.0.0/16"),
+			},
 		},
 		{
 			name: "mail addr",
@@ -1396,7 +1432,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[*mail.Address]("", nil),
 			input:    "foo@bar.com,baz@qux.com,quux@corge.com",
-			output:   []*mail.Address{{Address: "foo@bar.com"}, {Address: "baz@qux.com"}, {Address: "quux@corge.com"}},
+			output: []*mail.Address{
+				{Address: "foo@bar.com"},
+				{Address: "baz@qux.com"},
+				{Address: "quux@corge.com"},
+			},
 		},
 		{
 			name: "url",
@@ -1432,7 +1472,11 @@ func TestRegisterer_valuesVar(t *testing.T) {
 			defValue: "",
 			isType:   values.StringerSlice[*url.URL]("", nil),
 			input:    "foo://bar,baz://qux,quux://corge",
-			output:   []*url.URL{{Scheme: "foo", Host: "bar"}, {Scheme: "baz", Host: "qux"}, {Scheme: "quux", Host: "corge"}},
+			output: []*url.URL{
+				{Scheme: "foo", Host: "bar"},
+				{Scheme: "baz", Host: "qux"},
+				{Scheme: "quux", Host: "corge"},
+			},
 		},
 	}
 

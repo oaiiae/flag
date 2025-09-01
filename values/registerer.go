@@ -851,7 +851,7 @@ func (r Registerer) IPAddrPortSlice(name string, value []netip.AddrPort, sep str
 // IPAddrPortSliceVar defines a slice-style [netip.AddrPort] flag with specified name, default value, and usage string.
 // The input strings are split around sep before parsing.
 // The argument p points to a [netip.AddrPort] slice variable in which to store the value of the flag.
-func (r Registerer) IPAddrPortSliceVar(p *[]netip.AddrPort, name string, value []netip.AddrPort, sep string, usage string) {
+func (r Registerer) IPAddrPortSliceVar(p *[]netip.AddrPort, name string, value []netip.AddrPort, sep string, usage string) { //nolint: golines
 	*p = value
 	r.Varer.Var(StringerSliceVar(p, sep, netip.ParseAddrPort), name, usage)
 }
@@ -983,7 +983,7 @@ func (r Registerer) TimeSlice(name string, value []time.Time, sep string, layout
 // TimeSliceVar defines a slice-style [time.Time] flag with specified name, default value, layout format and usage string.
 // The input strings are split around sep before parsing.
 // The argument p points to a [time.Time] slice variable in which to store the value of the flag.
-func (r Registerer) TimeSliceVar(p *[]time.Time, name string, value []time.Time, sep string, layout string, usage string) {
+func (r Registerer) TimeSliceVar(p *[]time.Time, name string, value []time.Time, sep string, layout string, usage string) { //nolint: golines
 	*p = value
 	r.Varer.Var(TimeSliceVar(p, sep, layout), name, usage)
 }

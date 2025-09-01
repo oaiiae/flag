@@ -23,7 +23,7 @@ func ExampleGeneric_usage() {
 	fs.Var(values.GenericList(parse, format), "generic-list", "usage")
 	fs.Var(values.GenericListVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, parse, format), "generic-list-var", "usage")
 	fs.Var(values.GenericSlice(",", parse, format), "generic-slice", "usage")
-	fs.Var(values.GenericSliceVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, ",", parse, format), "generic-slice-var", "usage")
+	fs.Var(values.GenericSliceVar(&[]pair{{"foo", "bar"}, {"quu", "quux"}}, ",", parse, format), "generic-slice-var", "usage") //nolint: golines
 
 	fs.SetOutput(os.Stdout)
 	fs.PrintDefaults()

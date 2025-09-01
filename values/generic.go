@@ -15,11 +15,8 @@ type generic[T any] struct {
 
 func (v *generic[T]) Set(s string) error {
 	val, err := v.parse(s)
-	if err != nil {
-		return err
-	}
-	*v.value, v.isset = val, true
-	return nil
+	*v.value, v.isset = val, err == nil
+	return err
 }
 
 func (v *generic[T]) String() string {

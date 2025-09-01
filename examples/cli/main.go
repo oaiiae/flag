@@ -54,7 +54,7 @@ func main() {
 				Flags: func(fs *flag.FlagSet) {
 					fs.Duration("timeout", 10*time.Second, "wait up to this duration")
 				},
-				Func: func(ctx context.Context, args []string) error {
+				Func: func(ctx context.Context, _ []string) error {
 					ctx, cancel := context.WithTimeout(ctx, cli.Get(ctx, "timeout").(time.Duration))
 					defer cancel()
 					fmt.Println("waiting...")
@@ -66,7 +66,7 @@ func main() {
 	}
 
 	err := cli.Run(context.TODO(), os.Args[1:])
-	if err != nil && err != flag.ErrHelp {
+	if err != nil && err != flag.ErrHelp { //nolint: errorlint // explicit check
 		fmt.Println(err)
 		os.Exit(2) // exit immediately (skips deferred statements)
 	}
