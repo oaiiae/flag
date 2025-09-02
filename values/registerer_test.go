@@ -2,9 +2,11 @@ package values_test
 
 import (
 	"flag"
+	"fmt"
 	"net/mail"
 	"net/netip"
 	"net/url"
+	"os"
 	"testing"
 	"time"
 
@@ -12,6 +14,21 @@ import (
 
 	"github.com/oaiiae/flag/values"
 )
+
+func ExampleRegisterer_WithEnv() {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.SetOutput(os.Stdout)
+	os.Setenv("FOO_INT", "42")
+	values.FlagSetRegisterer(fs).WithEnv("FOO_").Int("int", 12, "an int")
+	fmt.Println(fs.Lookup("int").DefValue, fs.Lookup("int").Value)
+	fs.Usage()
+
+	// Output:
+	// 12 42
+	// Usage:
+	//   -int value
+	//     	an int (env $FOO_INT) (default 12)
+}
 
 func TestRegisterer_values(t *testing.T) {
 	testCases := []struct {

@@ -2,9 +2,12 @@ package values
 
 import (
 	"flag"
+	"fmt"
 	"net/mail"
 	"net/netip"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -15,6 +18,40 @@ type Registerer struct {
 	Varer interface {
 		Var(value flag.Value, name string, usage string)
 	}
+}
+
+type varerFunc func(value flag.Value, name string, usage string)
+
+func (f varerFunc) Var(value flag.Value, name string, usage string) { f(value, name, usage) }
+
+// WithEnvFunc is like [Registerer.WithEnv] but uses the envvar function to map a flag to its environment variable.
+func (r Registerer) WithEnvFunc(envvar func(name string) string) Registerer {
+	return Registerer{
+		Varer: varerFunc(func(value flag.Value, name, usage string) {
+			envvar := envvar(name)
+			r.Varer.Var(value, name, fmt.Sprintf("%s (env $%s)", usage, envvar))
+			if val, ok := os.LookupEnv(envvar); ok {
+				value.Set(val) //nolint: errcheck,gosec // ignore environment then
+			}
+		}),
+	}
+}
+
+// WithEnv returns a new [Registerer] setting registered flag values from environment and editing usage accordingly.
+// The environment variable is mapped from the flag name by:
+//
+//   - replacing dashes and dots by underscores
+//   - transforming to upper case
+//   - prefixing
+//
+// The environment variable is ignored if it fails to set the flag value.
+func (r Registerer) WithEnv(prefix string) Registerer {
+	replacer := strings.NewReplacer("-", "_", ".", "_")
+	return r.WithEnvFunc(func(s string) string {
+		s = replacer.Replace(s)
+		s = strings.ToUpper(s)
+		return prefix + s
+	})
 }
 
 // FlagSetRegisterer returns a [*flag.FlagSet] based [Registerer].

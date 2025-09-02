@@ -29,12 +29,12 @@ regions: [euw eune]
 tag: [foo bar]
 ```
 
-Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet` simplifying registration for common types:
+Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet` simplifying registration for common types and allowing to map environment variables:
 
 ```go
 func main() {
     var (
-        reg   = values.FlagSetRegisterer(flag.CommandLine)
+        reg   = values.FlagSetRegisterer(flag.CommandLine).WithEnv("FOO_")
         count = reg.Int("count", 10, "number of items")
         email = reg.MailAddr("email", &mail.Address{}, "contact email")
         bind  = reg.IPAddrPort("bind", netip.MustParseAddrPort("0.0.0.0:8080"), "binding address")
@@ -46,7 +46,7 @@ func main() {
 }
 ```
 ```
-$ go run . -count 12 -bind 10.0.0.1:80 -email foo@example.com
+$ FOO_COUNT=12 go run . -bind 10.0.0.1:80 -email foo@example.com
 Count: 12
 Email: <foo@example.com>
 Bind: 10.0.0.1:80
