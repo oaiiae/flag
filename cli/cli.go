@@ -6,7 +6,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
 	"slices"
 )
 
@@ -20,10 +19,6 @@ type Command struct {
 	UsageArgs string
 	// Flags definition function for this command.
 	Flags func(fs *flag.FlagSet)
-	// Flag to environment variable mappings.
-	// Allows users to define flags that may be set through environment as well.
-	// Environment is parsed before command-line arguments.
-	FlagsEnvMap map[string]string
 	// Flags marked as required, enabling early failure.
 	FlagsRequired []string
 	// Function for adding custom code and passing values around the execution
@@ -108,14 +103,6 @@ func (c *Command) Run(ctx context.Context, args []string) error {
 
 	if c.Flags != nil {
 		c.Flags(fs)
-	}
-
-	for name, envname := range c.FlagsEnvMap {
-		if env, ok := os.LookupEnv(envname); ok {
-			if err := fs.Set(name, env); err != nil {
-				return err
-			}
-		}
 	}
 
 	err := fs.Parse(args)

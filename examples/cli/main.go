@@ -36,9 +36,8 @@ func main() {
 				Usage:     "Dump CLI options & arguments",
 				UsageArgs: "arguments...",
 				Flags: func(fs *flag.FlagSet) {
-					fs.String("foo", "", "a foo-lish option (env $FOO)")
+					fs.String("foo", "", "a foo-lish option")
 				},
-				FlagsEnvMap:   map[string]string{"foo": "FOO"},
 				FlagsRequired: []string{"foo"},
 				Func: func(ctx context.Context, args []string) error {
 					fmt.Println("val", cli.Get(ctx, "val").(int))

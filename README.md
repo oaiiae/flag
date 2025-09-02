@@ -81,11 +81,8 @@ func main() {
                 Name:  "serve",
                 Usage: "Start the server",
                 Flags: func(fs *flag.FlagSet) {
-                    fs.String("config", "config.yaml", "configuration file (env $MYAPP_CONFIG)")
+                    fs.String("config", "config.yaml", "configuration file")
                     fs.Int("port", 8080, "port to listen on")
-                },
-                FlagsEnvMap: map[string]string{
-                    "config": "MYAPP_CONFIG",
                 },
                 FlagsRequired: []string{"config"},
                 Func: func(ctx context.Context, args []string) error {
@@ -137,7 +134,7 @@ Start the server
 
 Options:
   -config string
-    	configuration file (env $MYAPP_CONFIG) (default "config.yaml")
+    	configuration file (default "config.yaml")
   -port int
     	port to listen on (default 8080)
 ```

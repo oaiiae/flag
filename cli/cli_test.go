@@ -61,7 +61,6 @@ func TestCommandRun(t *testing.T) {
 			fs.Bool("bool", false, "a bool flag")
 			fs.Int("int", 12, "an int flag")
 		},
-		FlagsEnvMap:   map[string]string{"bool": "CLI_TEST_BOOL"},
 		FlagsRequired: []string{"bool"},
 		RunContext: func(parent context.Context, run func(context.Context) error) error {
 			return errors.Join(run(parent), errors.New("runcontext terminated"))
@@ -85,29 +84,13 @@ func TestCommandRun(t *testing.T) {
 	})
 
 	t.Run("parses bool", func(t *testing.T) {
-		t.Run("from args", func(t *testing.T) {
-			err := c.Run(context.Background(), []string{"-bool"})
-			require.ErrorContains(t, err, "foo terminated: true 12 []")
-		})
-
-		t.Run("from env", func(t *testing.T) {
-			t.Setenv("CLI_TEST_BOOL", "true")
-			err := c.Run(context.Background(), []string{})
-			require.ErrorContains(t, err, "foo terminated: true 12 []")
-		})
+		err := c.Run(context.Background(), []string{"-bool"})
+		require.ErrorContains(t, err, "foo terminated: true 12 []")
 	})
 
 	t.Run("reports parsing errors", func(t *testing.T) {
-		t.Run("from args", func(t *testing.T) {
-			err := c.Run(context.Background(), []string{"-bool=notbool"})
-			require.ErrorContains(t, err, "invalid boolean value \"notbool\"")
-		})
-
-		t.Run("from env", func(t *testing.T) {
-			t.Setenv("CLI_TEST_BOOL", "notbool")
-			err := c.Run(context.Background(), []string{})
-			require.ErrorContains(t, err, "parse error")
-		})
+		err := c.Run(context.Background(), []string{"-bool=notbool"})
+		require.ErrorContains(t, err, "invalid boolean value \"notbool\"")
 	})
 
 	t.Run("runs within context", func(t *testing.T) {
