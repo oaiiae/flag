@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// generic implements [flag.Value] for a single variable.
 type generic[T any] struct {
 	parse  func(string) (T, error)
 	format func(T) string
@@ -41,6 +42,7 @@ func GenericVar[T any](p *T, parse func(string) (T, error), format func(T) strin
 	return &generic[T]{parse, format, p, true}
 }
 
+// genericList implements [flag.Value] appending a new variable to a slice every time it is set.
 type genericList[T any] struct {
 	parse  func(string) (T, error)
 	format func(T) string
@@ -82,6 +84,7 @@ func GenericListVar[T any](p *[]T, parse func(string) (T, error), format func(T)
 	return &genericList[T]{parse, format, p}
 }
 
+// genericList implements [flag.Value] for a slice.
 type genericSlice[T any] struct {
 	sep    string
 	parse  func(string) (T, error)

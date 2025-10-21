@@ -1,4 +1,4 @@
-// Package values provides a flexible way for defining [flag.Value].
+// Package values provides implementations of [flag.Value] and primitives to register them.
 //
 // Aside of [RegistererFunc], there is 30 functions declaring various [flag.Value].
 // Their names are matched by this regular expression:
@@ -6,25 +6,22 @@
 //	(Generic|Basic|Stringer|Time|Duration)(List|Slice)?(Var)?
 //
 // If neither 'List' nor 'Slice' are present, then the value is parsed and
-// stored to a variable. Multiple sets will effectively overwrite the value.
+// stored to a variable. Multiple sets will overwrite the value.
 //
-// If 'List' is present, the value may be set multiple times. Each successfully
-// parsed string is actually appended to a slice.
+// If 'List' is present, the value is then a slice and can be set multiple times.
 //
-// If 'Slice' is present, the flag may be invoked with a string formatted as
-// multiple values joined with a separator. The [flag.Value] will split the
-// input string before parsing the substrings into a slice as well. Calling the
-// flag multiple times overwrites the full slice and does NOT append new values.
+// If 'Slice' is present, the value is also a slice, but all its values are set
+// at once every time the flag is invoked. The [flag.Value] will split the input
+// string and parse the substrings.
 //
 // If 'Var' is present, the function accepts another pointer parameter which
 // will be used to store the parsed values.
 //
-// On top of 'Generic', which is at the root of the whole package, there is
-// several variants to simplify standard usages, while keeping the flexibility
-// brought by the generic implementation:
+// On top of 'Generic', several [flag.Value] variants are implemented to simplify
+// common use-cases:
 //
 //   - 'Basic' for Go's basic types (int, uint64, float64, string, ...)
-//   - 'Stringer' [fmt.Stringer] implementors ([*url.URL], [netip.Addr], ...)
+//   - 'Stringer' for object imlementing [fmt.Stringer] ([*url.URL], [netip.Addr], ...)
 //   - 'Time' takes a layout for use in [time.Time.Format] and [time.Parse]
 //   - 'Duration' for [time.Duration] values
 //
