@@ -1,4 +1,4 @@
-# flag/*
+# flag/\*
 
 Flag is a collection of packages extending the usability of the standard Go `flag` package. It has zero dependencies and aims to provide a simple, Go-idiomatic framework for implementing complex command-line interfaces.
 
@@ -21,6 +21,7 @@ func main() {
     flag.VisitAll(func(f *flag.Flag) { fmt.Printf("%s: %v\n", f.Name, f.Value.(flag.Getter).Get()) })
 }
 ```
+
 ```
 $ go run . -count 12 -endpoint http://example.com -tag foo -tag bar -regions euw,eune
 count: 12
@@ -34,7 +35,7 @@ Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet
 ```go
 func main() {
     var (
-        reg   = values.FlagSetRegisterer(flag.CommandLine).WithEnv("FOO_")
+        reg   = values.FlagSetEnvRegisterer(flag.CommandLine, "FOO_")
         count = reg.Int("count", 10, "number of items")
         email = reg.MailAddr("email", &mail.Address{}, "contact email")
         bind  = reg.IPAddrPort("bind", netip.MustParseAddrPort("0.0.0.0:8080"), "binding address")
@@ -45,6 +46,7 @@ func main() {
     fmt.Println("Bind:", *bind)
 }
 ```
+
 ```
 $ FOO_COUNT=12 go run . -bind 10.0.0.1:80 -email foo@example.com
 Count: 12
@@ -112,6 +114,7 @@ func main() {
     }
 }
 ```
+
 ```
 $ go run . -h
 Usage: /tmp/go-build690470450/b001/exe/main [options] COMMAND [arguments]
@@ -126,6 +129,7 @@ Commands:
   serve      Start the server
   version    Show version information
 ```
+
 ```
 $ go run . serve -h
 Usage: serve [options]
