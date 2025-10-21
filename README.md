@@ -30,7 +30,7 @@ regions: [euw eune]
 tag: [foo bar]
 ```
 
-Alternatively, the `Registerer` provides an interface analogous to `flag.FlagSet` simplifying registration for common types and allowing to map environment variables:
+Alternatively, the `RegistererFunc` provides an interface analogous to `flag.FlagSet` simplifying registration for common types and allowing to map environment variables:
 
 ```go
 func main() {
