@@ -782,7 +782,7 @@ func (f RegistererFunc) DurationSlice(name string, value []time.Duration, sep st
 // DurationSliceVar defines a slice-style [time.Duration] flag with specified name, default value, and usage string.
 // The input strings are split around sep before parsing.
 // The argument p points to a [time.Duration] slice variable in which to store the value of the flag.
-func (f RegistererFunc) DurationSliceVar(p *[]time.Duration, name string, value []time.Duration, sep string, usage string) {
+func (f RegistererFunc) DurationSliceVar(p *[]time.Duration, name string, value []time.Duration, sep string, usage string) { //nolint: golines
 	*p = value
 	f(DurationSliceVar(p, sep), name, usage)
 }
@@ -862,7 +862,7 @@ func (f RegistererFunc) IPAddrPortListVar(p *[]netip.AddrPort, name string, valu
 // IPAddrPortSlice defines a slice-style [netip.AddrPort] flag with specified name, default value, and usage string.
 // The input strings are split around sep before parsing.
 // The return value is the address of a [netip.AddrPort] slice that stores the values of the flag.
-func (f RegistererFunc) IPAddrPortSlice(name string, value []netip.AddrPort, sep string, usage string) *[]netip.AddrPort {
+func (f RegistererFunc) IPAddrPortSlice(name string, value []netip.AddrPort, sep string, usage string) *[]netip.AddrPort { //nolint: golines
 	f(StringerSliceVar(&value, sep, netip.ParseAddrPort), name, usage)
 	return &value
 }
@@ -914,7 +914,7 @@ func (f RegistererFunc) IPPrefixSlice(name string, value []netip.Prefix, sep str
 // IPPrefixSliceVar defines a slice-style [netip.Prefix] flag with specified name, default value, and usage string.
 // The input strings are split around sep before parsing.
 // The argument p points to a [netip.Prefix] slice variable in which to store the value of the flag.
-func (f RegistererFunc) IPPrefixSliceVar(p *[]netip.Prefix, name string, value []netip.Prefix, sep string, usage string) {
+func (f RegistererFunc) IPPrefixSliceVar(p *[]netip.Prefix, name string, value []netip.Prefix, sep string, usage string) { //nolint: golines
 	*p = value
 	f(StringerSliceVar(p, sep, netip.ParsePrefix), name, usage)
 }
@@ -958,7 +958,7 @@ func (f RegistererFunc) MailAddrSlice(name string, value []*mail.Address, sep st
 // MailAddrSliceVar defines a slice-style [*mail.Address] flag with specified name, default value, and usage string.
 // The input strings are split around sep before parsing.
 // The argument p points to a [*mail.Address] slice variable in which to store the value of the flag.
-func (f RegistererFunc) MailAddrSliceVar(p *[]*mail.Address, name string, value []*mail.Address, sep string, usage string) {
+func (f RegistererFunc) MailAddrSliceVar(p *[]*mail.Address, name string, value []*mail.Address, sep string, usage string) { //nolint: golines
 	*p = value
 	f(StringerSliceVar(p, sep, mail.ParseAddress), name, usage)
 }
@@ -994,7 +994,7 @@ func (f RegistererFunc) TimeListVar(p *[]time.Time, name string, value []time.Ti
 // TimeSlice defines a slice-style [time.Time] flag with specified name, default value, layout format and usage string.
 // The input strings are split around sep before parsing.
 // The return value is the address of a [time.Time] slice that stores the values of the flag.
-func (f RegistererFunc) TimeSlice(name string, value []time.Time, sep string, layout string, usage string) *[]time.Time {
+func (f RegistererFunc) TimeSlice(name string, value []time.Time, sep string, layout string, usage string) *[]time.Time { //nolint: golines
 	f(TimeSliceVar(&value, sep, layout), name, usage)
 	return &value
 }
