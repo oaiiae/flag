@@ -12,7 +12,7 @@ import (
 
 func main() {
 	var (
-		reg = values.FlagSetRegisterer(flag.CommandLine).WithEnv("FOO_")
+		reg = values.FlagSetEnvRegisterer(flag.CommandLine, "FOO_")
 		t   = reg.Time("ts", time.Now(), time.RFC3339, "set a `RFC3339 date`")
 		u   = reg.URL("url", &url.URL{}, "set `URL`")
 		as  = reg.IPAddrSlice("ipaddrs", nil, ",", "set comma-separated IP `addresses`")

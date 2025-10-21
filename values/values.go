@@ -1,6 +1,6 @@
 // Package values provides a flexible way for defining [flag.Value].
 //
-// Aside of [Registerer], there is 30 functions declaring various [flag.Value].
+// Aside of [RegistererFunc], there is 30 functions declaring various [flag.Value].
 // Their names are matched by this regular expression:
 //
 //	(Generic|Basic|Stringer|Time|Duration)(List|Slice)?(Var)?
