@@ -1,4 +1,4 @@
-module github.com/oaiiae/flag
+module github.com/rlibaert/flag
 
 go 1.23
 

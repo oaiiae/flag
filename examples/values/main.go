@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/oaiiae/flag/values"
+	"github.com/rlibaert/flag/values"
 )
 
 func main() {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/oaiiae/flag/values"
+	"github.com/rlibaert/flag/values"
 )
 
 func TestFlagValues(t *testing.T) {

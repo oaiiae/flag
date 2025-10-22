@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/oaiiae/flag/values"
+	"github.com/rlibaert/flag/values"
 )
 
 func ExampleGeneric_usage() {
